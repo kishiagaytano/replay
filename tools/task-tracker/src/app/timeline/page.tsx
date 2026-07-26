@@ -5,48 +5,49 @@ import { useTaskStore } from "@/lib/store/task-store";
 import { useNow } from "@/lib/utils/use-now";
 import { PageHeader } from "@/components/common/PageHeader";
 import { TimelineDay } from "@/components/timeline/TimelineDay";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { groupTasksByDate } from "@/lib/utils/metrics";
 import { isSameDay } from "@/lib/utils/dates";
 
 export default function TimelinePage() {
-  const { tasks, dayGoals, getMember } = useTaskStore();
+  const { tasks, getMember } = useTaskStore();
   const now = useNow();
 
-  // Build one entry per date that has either a scheduled task or a stated goal.
+  // One entry per date that has tasks, earliest first.
   const days = useMemo(() => {
     const tasksByDate = groupTasksByDate(tasks);
-    const goalByDate = new Map(dayGoals.map((g) => [g.date, g.goal]));
-    const dates = new Set<string>([...tasksByDate.keys(), ...goalByDate.keys()]);
-
-    return [...dates]
-      .sort()
-      .map((date) => ({
-        date,
-        goal: goalByDate.get(date),
-        tasks: tasksByDate.get(date) ?? [],
-      }));
-  }, [tasks, dayGoals]);
+    return [...tasksByDate.keys()].sort().map((date) => ({
+      date,
+      tasks: tasksByDate.get(date) ?? [],
+    }));
+  }, [tasks]);
 
   return (
     <div>
       <PageHeader
         title="Timeline"
-        description="The sprint day by day — each day's goal, its tasks, and progress toward Aug 7."
+        description="The sprint day by day — each day's tasks and progress, grouped by due date."
       />
 
-      <div className="mt-2">
-        {days.map((day) => (
-          <TimelineDay
-            key={day.date}
-            date={day.date}
-            goal={day.goal}
-            tasks={day.tasks}
-            getMember={getMember}
-            now={now}
-            isToday={now ? isSameDay(day.date, now) : false}
-          />
-        ))}
-      </div>
+      {days.length === 0 ? (
+        <EmptyState
+          title="No scheduled tasks yet"
+          hint="Add tasks with due dates and they'll show up here, grouped by day."
+        />
+      ) : (
+        <div className="mt-2">
+          {days.map((day) => (
+            <TimelineDay
+              key={day.date}
+              date={day.date}
+              tasks={day.tasks}
+              getMember={getMember}
+              now={now}
+              isToday={now ? isSameDay(day.date, now) : false}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

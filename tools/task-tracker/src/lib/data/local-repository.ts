@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { MemberSchema, TaskSchema, type DayGoal, type Member, type Task } from "@/lib/schema/task.schema";
+import { MemberSchema, TaskSchema, type Member, type Task } from "@/lib/schema/task.schema";
 import type { TaskRepository } from "@/lib/data/repository";
-import { DAY_GOALS, SEED_TASKS, TEAM_MEMBERS } from "@/lib/data/seed";
+import { SEED_TASKS, TEAM_MEMBERS } from "@/lib/data/seed";
 
 const TASKS_KEY = "replay-tracker:tasks:v1";
 const MEMBERS_KEY = "replay-tracker:members:v1";
@@ -56,10 +56,6 @@ export class LocalTaskRepository implements TaskRepository {
       MEMBERS_KEY,
       members.map((m) => (m.id === id ? { ...m, ...patch } : m)),
     );
-  }
-
-  async listDayGoals(): Promise<DayGoal[]> {
-    return DAY_GOALS;
   }
 
   subscribe(onChange: () => void): () => void {

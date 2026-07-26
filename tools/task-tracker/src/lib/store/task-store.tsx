@@ -10,7 +10,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import type { DayGoal, Member, Task, TaskDraft, TaskStatus } from "@/lib/schema/task.schema";
+import type { Member, Task, TaskDraft, TaskStatus } from "@/lib/schema/task.schema";
 import { createTaskFromDraft } from "@/lib/data/repository";
 import { isSupabaseEnabled, taskRepository } from "@/lib/data/repository-factory";
 
@@ -24,12 +24,11 @@ import { isSupabaseEnabled, taskRepository } from "@/lib/data/repository-factory
 interface TaskState {
   tasks: Task[];
   members: Member[];
-  dayGoals: DayGoal[];
   hydrated: boolean;
 }
 
 type TaskAction =
-  | { type: "SET"; tasks?: Task[]; members?: Member[]; dayGoals?: DayGoal[]; hydrated?: boolean }
+  | { type: "SET"; tasks?: Task[]; members?: Member[]; hydrated?: boolean }
   | { type: "ADD"; task: Task }
   | { type: "PATCH"; id: string; patch: Partial<Task> }
   | { type: "DELETE"; id: string }
@@ -41,7 +40,6 @@ function reducer(state: TaskState, action: TaskAction): TaskState {
       return {
         tasks: action.tasks ?? state.tasks,
         members: action.members ?? state.members,
-        dayGoals: action.dayGoals ?? state.dayGoals,
         hydrated: action.hydrated ?? state.hydrated,
       };
     case "ADD":
@@ -66,7 +64,6 @@ function reducer(state: TaskState, action: TaskAction): TaskState {
 interface TaskContextValue {
   tasks: Task[];
   members: Member[];
-  dayGoals: DayGoal[];
   hydrated: boolean;
   /** True when reading/writing shared Supabase; false in localStorage mode. */
   isCloud: boolean;
@@ -81,7 +78,7 @@ interface TaskContextValue {
 
 const TaskContext = createContext<TaskContextValue | null>(null);
 
-const INITIAL: TaskState = { tasks: [], members: [], dayGoals: [], hydrated: false };
+const INITIAL: TaskState = { tasks: [], members: [], hydrated: false };
 
 export function TaskProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, INITIAL);
@@ -99,12 +96,11 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     let active = true;
     (async () => {
       try {
-        const [tasks, members, dayGoals] = await Promise.all([
+        const [tasks, members] = await Promise.all([
           taskRepository.listTasks(),
           taskRepository.listMembers(),
-          taskRepository.listDayGoals(),
         ]);
-        if (active) dispatch({ type: "SET", tasks, members, dayGoals, hydrated: true });
+        if (active) dispatch({ type: "SET", tasks, members, hydrated: true });
       } catch (err) {
         console.error("[tracker] failed to load data:", err);
         // Still mark hydrated so the UI renders (empty) instead of hanging.
@@ -190,7 +186,6 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     () => ({
       tasks: state.tasks,
       members: state.members,
-      dayGoals: state.dayGoals,
       hydrated: state.hydrated,
       isCloud: isSupabaseEnabled,
       addTask,

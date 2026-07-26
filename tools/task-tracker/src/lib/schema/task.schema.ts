@@ -58,17 +58,11 @@ export const MemberSchema = z.object({
   color: z.string().min(1),
 });
 
-export const DayGoalSchema = z.object({
-  date: IsoDate,
-  goal: z.string(),
-});
-
 export type TaskStatus = z.infer<typeof TaskStatusSchema>;
 export type TaskPriority = z.infer<typeof TaskPrioritySchema>;
 export type TaskCategory = z.infer<typeof TaskCategorySchema>;
 export type Task = z.infer<typeof TaskSchema>;
 export type Member = z.infer<typeof MemberSchema>;
-export type DayGoal = z.infer<typeof DayGoalSchema>;
 
 /** Fields a user may edit in the task dialog (the specified core fields). */
 export const TaskDraftSchema = TaskSchema.pick({

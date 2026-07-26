@@ -1,4 +1,4 @@
-import type { DayGoal, Member, Task, TaskDraft } from "@/lib/schema/task.schema";
+import type { Member, Task, TaskDraft } from "@/lib/schema/task.schema";
 
 /**
  * The data-access boundary (CLAUDE.md §7): the store and UI depend ONLY on this
@@ -25,8 +25,6 @@ export interface TaskRepository {
   listMembers(): Promise<Member[]>;
   /** Patch only the provided fields of a member (e.g. name / role). */
   updateMember(id: string, patch: Partial<Member>): Promise<void>;
-
-  listDayGoals(): Promise<DayGoal[]>;
 
   /**
    * Optional live updates. Calls `onChange` whenever tasks/members change

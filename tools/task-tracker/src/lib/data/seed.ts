@@ -1,4 +1,4 @@
-import type { DayGoal, Member, Task } from "@/lib/schema/task.schema";
+import type { Member, Task } from "@/lib/schema/task.schema";
 
 /**
  * Local mock data. This is the ONLY place the tracker's initial content lives.
@@ -36,21 +36,6 @@ export const TEAM_MEMBERS: Member[] = [
     initials: "KH",
     color: "bg-teal-100 text-teal-700 ring-teal-600/20",
   },
-];
-
-/** Goal for each day of the sprint — drives the Timeline. */
-export const DAY_GOALS: DayGoal[] = [
-  { date: "2026-07-26", goal: "Lock scope, finish proposal review, kick off the build" },
-  { date: "2026-07-28", goal: "Case schema + proposal ready for sign-off" },
-  { date: "2026-07-29", goal: "Flood Warning evidence verified; player wireframes done" },
-  { date: "2026-07-31", goal: "Simulation engine playable end-to-end" },
-  { date: "2026-08-01", goal: "Flood Warning case fully authored & cited" },
-  { date: "2026-08-02", goal: "Case player UI wired to the engine" },
-  { date: "2026-08-03", goal: "Evidence Explorer + timeline-collapse reveal" },
-  { date: "2026-08-04", goal: "Full vertical slice working on mobile" },
-  { date: "2026-08-05", goal: "Accessibility & QA pass" },
-  { date: "2026-08-06", goal: "Pitch video recorded & edited" },
-  { date: "2026-08-07", goal: "Final deploy + submit to UNESCO" },
 ];
 
 const iso = (date: string, hour = 9): string =>

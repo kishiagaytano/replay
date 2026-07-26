@@ -16,7 +16,7 @@ This is an internal dev dashboard, not a product — think Linear / GitHub Proje
 | Page | What it shows |
 |---|---|
 | **Dashboard** | Days to Aug 7, overall progress, today's tasks, upcoming deadlines (next 3 days), current blockers, overdue. |
-| **Timeline** | The sprint day by day — each day's goal, its tasks, and progress. |
+| **Timeline** | The sprint day by day — each day's tasks and progress, grouped by due date. |
 | **Tasks** | A 4-column board (To Do · In Progress · Review · Done) with drag-and-drop, search, and filters. Create / edit / delete tasks. |
 | **Team** | Each member's assigned / completed tasks and current workload. |
 

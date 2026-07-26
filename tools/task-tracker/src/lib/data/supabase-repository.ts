@@ -1,12 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { MemberSchema, TaskSchema, type DayGoal, type Member, type Task } from "@/lib/schema/task.schema";
+import { MemberSchema, TaskSchema, type Member, type Task } from "@/lib/schema/task.schema";
 import type { TaskRepository } from "@/lib/data/repository";
-import { DAY_GOALS } from "@/lib/data/seed";
 
 /**
  * Shared Postgres implementation of {@link TaskRepository}. All four teammates
  * read/write the same `tasks` and `members` tables, and Supabase Realtime keeps
- * everyone's board in sync. Day goals stay static (not user-editable).
+ * everyone's board in sync.
  *
  * DB columns are snake_case; we map to/from the camelCase domain model here so
  * that mapping is the ONLY place that knows about the database shape.
@@ -50,10 +49,6 @@ export class SupabaseTaskRepository implements TaskRepository {
   async updateMember(id: string, patch: Partial<Member>): Promise<void> {
     const { error } = await this.client.from("members").update(memberPatchToRow(patch)).eq("id", id);
     if (error) throw error;
-  }
-
-  async listDayGoals(): Promise<DayGoal[]> {
-    return DAY_GOALS;
   }
 
   subscribe(onChange: () => void): () => void {
