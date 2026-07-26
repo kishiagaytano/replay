@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js build output
+.next/
+out/
+build/
+
+# Environment files (never commit secrets/keys)
+.env
+.env.local
+.env*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.tsbuildinfo
+next-env.d.ts
