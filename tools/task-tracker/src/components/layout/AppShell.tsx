@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { DeadlinePill } from "@/components/layout/DeadlinePill";
 import { ConnectionBadge } from "@/components/layout/ConnectionBadge";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 /**
  * App frame: fixed sidebar on desktop, stacked top nav on mobile (CLAUDE.md §8
@@ -10,18 +11,19 @@ import { ConnectionBadge } from "@/components/layout/ConnectionBadge";
 export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen lg:flex">
-      <aside className="border-b border-slate-200 bg-white px-4 py-3 lg:w-60 lg:shrink-0 lg:border-b-0 lg:border-r lg:px-4 lg:py-5">
+      <aside className="border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900 lg:w-60 lg:shrink-0 lg:border-b-0 lg:border-r lg:px-4 lg:py-5">
         <div className="mb-0 flex items-center justify-between lg:mb-6 lg:block">
           <div className="flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-slate-900 text-sm font-bold text-white">
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-slate-900 text-sm font-bold text-white dark:bg-slate-100 dark:text-slate-900">
               r
             </span>
             <div className="leading-tight">
-              <p className="text-sm font-semibold text-slate-900">rePlay</p>
-              <p className="text-[11px] text-slate-400">Team Tracker</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">rePlay</p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500">Team Tracker</p>
             </div>
           </div>
-          <div className="lg:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
+            <ThemeToggle />
             <DeadlinePill />
           </div>
         </div>
@@ -31,11 +33,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="hidden items-center justify-between border-b border-slate-200 bg-white/80 px-6 py-3 backdrop-blur lg:flex">
-          <p className="text-sm text-slate-500">UNESCO Youth Hackathon 2026 · sprint to Aug 7</p>
+        <header className="hidden items-center justify-between border-b border-slate-200 bg-white/80 px-6 py-3 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 lg:flex">
+          <p className="text-sm text-slate-500 dark:text-slate-400">UNESCO Youth Hackathon 2026 · sprint to Aug 7</p>
           <div className="flex items-center gap-3">
             <ConnectionBadge />
             <DeadlinePill />
+            <ThemeToggle />
           </div>
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:py-8">{children}</main>

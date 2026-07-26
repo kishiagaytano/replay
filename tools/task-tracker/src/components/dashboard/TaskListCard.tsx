@@ -30,7 +30,7 @@ export function TaskListCard({
       <CardHeader
         title={title}
         subtitle={subtitle}
-        action={action ?? <span className="text-xs font-medium text-slate-400">{tasks.length}</span>}
+        action={action ?? <span className="text-xs font-medium text-slate-400 dark:text-slate-500">{tasks.length}</span>}
       />
       <CardBody className="p-2">
         {tasks.length === 0 ? (

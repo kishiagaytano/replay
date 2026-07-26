@@ -12,14 +12,14 @@ export function TaskColumn({
   tasks,
   now,
   getMember,
-  onEdit,
+  onOpen,
   onStatusChange,
 }: {
   status: TaskStatus;
   tasks: Task[];
   now: Date | null;
   getMember: (id: string) => Member | undefined;
-  onEdit: (task: Task) => void;
+  onOpen: (task: Task) => void;
   onStatusChange: (id: string, status: TaskStatus) => void;
 }) {
   const [isOver, setIsOver] = useState(false);
@@ -36,8 +36,8 @@ export function TaskColumn({
     <div className="flex min-w-[15rem] flex-1 flex-col">
       <div className="mb-2 flex items-center gap-2 px-1">
         <span className={cn("h-2 w-2 rounded-full", meta.dot)} />
-        <h3 className="text-sm font-semibold text-slate-700">{meta.label}</h3>
-        <span className="rounded-full bg-slate-100 px-1.5 text-xs font-medium text-slate-500">
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">{meta.label}</h3>
+        <span className="rounded-full bg-slate-100 px-1.5 text-xs font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
           {tasks.length}
         </span>
       </div>
@@ -51,11 +51,13 @@ export function TaskColumn({
         onDrop={handleDrop}
         className={cn(
           "scroll-thin flex min-h-[8rem] flex-1 flex-col gap-2 rounded-xl border p-2 transition-colors",
-          isOver ? "border-accent bg-indigo-50/50" : "border-slate-200 bg-slate-50/60",
+          isOver
+            ? "border-accent bg-indigo-50/50 dark:bg-indigo-500/10"
+            : "border-slate-200 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-900/40",
         )}
       >
         {tasks.length === 0 ? (
-          <p className="px-1 py-6 text-center text-xs text-slate-400">Drop tasks here</p>
+          <p className="px-1 py-6 text-center text-xs text-slate-400 dark:text-slate-500">Drop tasks here</p>
         ) : (
           tasks.map((task) => (
             <TaskCard
@@ -63,7 +65,7 @@ export function TaskColumn({
               task={task}
               assignee={getMember(task.assigneeId)}
               now={now}
-              onEdit={onEdit}
+              onOpen={onOpen}
               onStatusChange={onStatusChange}
               draggable
             />

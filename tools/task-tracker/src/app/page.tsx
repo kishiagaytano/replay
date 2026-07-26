@@ -93,20 +93,25 @@ export default function DashboardPage() {
           <CardHeader
             title="Current blockers"
             subtitle="Active tasks with something in the way"
-            action={<span className="text-xs font-medium text-slate-400">{blockers.length}</span>}
+            action={<span className="text-xs font-medium text-slate-400 dark:text-slate-500">{blockers.length}</span>}
           />
           <CardBody className="p-2">
             {blockers.length === 0 ? (
-              <p className="px-2 py-6 text-center text-sm text-slate-400">No blockers right now. 🎉</p>
+              <p className="px-2 py-6 text-center text-sm text-slate-400 dark:text-slate-500">No blockers right now. 🎉</p>
             ) : (
               <ul className="space-y-2 p-1">
                 {blockers.map((task) => {
                   const member = getMember(task.assigneeId);
                   return (
-                    <li key={task.id} className="rounded-lg border border-red-100 bg-red-50/60 p-3">
-                      <p className="text-sm font-medium text-slate-800">{task.title}</p>
-                      <p className="mt-1 text-xs text-red-700">{task.blocker}</p>
-                      <p className="mt-1.5 text-[11px] text-slate-400">{member ? member.name : "Unassigned"}</p>
+                    <li
+                      key={task.id}
+                      className="rounded-lg border border-red-100 bg-red-50/60 p-3 dark:border-red-900/50 dark:bg-red-950/30"
+                    >
+                      <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{task.title}</p>
+                      <p className="mt-1 text-xs text-red-700 dark:text-red-300">{task.blocker}</p>
+                      <p className="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">
+                        {member ? member.name : "Unassigned"}
+                      </p>
                     </li>
                   );
                 })}
@@ -141,7 +146,7 @@ export default function DashboardPage() {
         </div>
       ) : null}
 
-      <p className="mt-6 text-center text-xs text-slate-400">
+      <p className="mt-6 text-center text-xs text-slate-400 dark:text-slate-500">
         Managing the plan?{" "}
         <Link href="/tasks" className="font-medium text-accent hover:underline">
           Open the task board →

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { TaskColumn } from "@/components/tasks/TaskColumn";
 import { TaskDialog } from "@/components/tasks/TaskDialog";
+import { TaskDetailDialog } from "@/components/tasks/TaskDetailDialog";
 import { EMPTY_FILTERS, TaskToolbar, matchesFilters, type TaskFilters } from "@/components/tasks/TaskToolbar";
 import { STATUS_ORDER } from "@/lib/utils/constants";
 import { byUrgency } from "@/lib/utils/metrics";
@@ -21,7 +22,12 @@ export default function TasksPage() {
   const [filters, setFilters] = useState<TaskFilters>(EMPTY_FILTERS);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Task | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [viewing, setViewing] = useState<Task | null>(null);
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
+
+  // Keep the detail view showing live data (e.g. after an inline status change).
+  const viewingTask = viewing ? (tasks.find((t) => t.id === viewing.id) ?? null) : null;
 
   const filtered = useMemo(
     () => tasks.filter((t) => matchesFilters(t, filters)).sort(byUrgency),
@@ -38,7 +44,12 @@ export default function TasksPage() {
     setEditing(null);
     setDialogOpen(true);
   };
+  const openDetail = (task: Task) => {
+    setViewing(task);
+    setDetailOpen(true);
+  };
   const openEdit = (task: Task) => {
+    setDetailOpen(false);
     setEditing(task);
     setDialogOpen(true);
   };
@@ -79,11 +90,20 @@ export default function TasksPage() {
             tasks={columns[status]}
             now={now}
             getMember={getMember}
-            onEdit={openEdit}
+            onOpen={openDetail}
             onStatusChange={moveTask}
           />
         ))}
       </div>
+
+      <TaskDetailDialog
+        open={detailOpen}
+        task={viewingTask}
+        assignee={viewingTask ? getMember(viewingTask.assigneeId) : undefined}
+        now={now}
+        onClose={() => setDetailOpen(false)}
+        onEdit={openEdit}
+      />
 
       <TaskDialog
         open={dialogOpen}

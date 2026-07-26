@@ -28,13 +28,13 @@ export function MemberCard({
         <div className="flex items-center gap-3">
           <Avatar member={member} />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-slate-900">{member.name}</p>
-            <p className="truncate text-xs text-slate-500">{member.role || "No role set"}</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{member.name}</p>
+            <p className="truncate text-xs text-slate-500 dark:text-slate-400">{member.role || "No role set"}</p>
           </div>
           {onEdit ? (
             <button
               onClick={() => onEdit(member)}
-              className="rounded-md px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+              className="rounded-md px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
             >
               Edit
             </button>
@@ -49,7 +49,7 @@ export function MemberCard({
         </div>
 
         <div>
-          <div className="mb-1 flex items-center justify-between text-xs text-slate-500">
+          <div className="mb-1 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
             <span>Completion</span>
             <span className="font-medium tabular-nums">{load.completionPercent}%</span>
           </div>
@@ -61,7 +61,7 @@ export function MemberCard({
           {STATUS_LIST.map((s) => (
             <span
               key={s.id}
-              className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-[11px] text-slate-600"
+              className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-[11px] text-slate-600 dark:bg-slate-800 dark:text-slate-300"
             >
               <span className={cn("h-1.5 w-1.5 rounded-full", s.dot)} />
               {s.label} · {load.byStatus[s.id]}
@@ -71,7 +71,7 @@ export function MemberCard({
 
         {/* Active task list */}
         <div>
-          <p className="mb-1 text-xs font-medium text-slate-500">Current workload</p>
+          <p className="mb-1 text-xs font-medium text-slate-500 dark:text-slate-400">Current workload</p>
           {load.active.length === 0 ? (
             <EmptyState title="No active tasks" hint="All caught up." />
           ) : (
@@ -90,11 +90,15 @@ export function MemberCard({
 }
 
 function Stat({ label, value, tone = "default" }: { label: string; value: number; tone?: "default" | "warn" | "good" }) {
-  const toneClass = { default: "text-slate-900", warn: "text-amber-600", good: "text-emerald-600" }[tone];
+  const toneClass = {
+    default: "text-slate-900 dark:text-slate-100",
+    warn: "text-amber-600 dark:text-amber-400",
+    good: "text-emerald-600 dark:text-emerald-400",
+  }[tone];
   return (
-    <div className="rounded-lg bg-slate-50 py-2">
+    <div className="rounded-lg bg-slate-50 py-2 dark:bg-slate-800/60">
       <p className={cn("text-lg font-semibold tabular-nums", toneClass)}>{value}</p>
-      <p className="text-[11px] text-slate-400">{label}</p>
+      <p className="text-[11px] text-slate-400 dark:text-slate-500">{label}</p>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import type { Member, Task, TaskDraft } from "@/lib/schema/task.schema";
 import { TaskDraftSchema } from "@/lib/schema/task.schema";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
-import { Label, Select, TextArea, TextInput } from "@/components/ui/Field";
+import { AutoGrowTextArea, Label, Select, TextInput } from "@/components/ui/Field";
 import { CATEGORY_LIST, PRIORITY_LIST, STATUS_LIST } from "@/lib/utils/constants";
 import { todayIso } from "@/lib/utils/dates";
 
@@ -64,9 +64,9 @@ export function TaskDialog({
 
         <div>
           <Label htmlFor="description">Description</Label>
-          <TextArea
+          <AutoGrowTextArea
             id="description"
-            rows={3}
+            minRows={3}
             value={draft.description}
             onChange={(e) => set("description", e.target.value)}
             placeholder="Short context — what does 'done' look like?"

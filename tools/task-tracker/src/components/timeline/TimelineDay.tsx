@@ -25,18 +25,18 @@ export function TimelineDay({
   return (
     <div className="relative pl-8">
       {/* Timeline rail + node */}
-      <span className="absolute left-[7px] top-2 h-full w-px bg-slate-200" aria-hidden />
+      <span className="absolute left-[7px] top-2 h-full w-px bg-slate-200 dark:bg-slate-800" aria-hidden />
       <span
         className={cn(
-          "absolute left-0 top-1.5 grid h-4 w-4 place-items-center rounded-full ring-4 ring-slate-50",
-          isToday ? "bg-accent" : progress.percent === 100 ? "bg-emerald-500" : "bg-slate-300",
+          "absolute left-0 top-1.5 grid h-4 w-4 place-items-center rounded-full ring-4 ring-slate-50 dark:ring-slate-950",
+          isToday ? "bg-accent" : progress.percent === 100 ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-600",
         )}
         aria-hidden
       />
 
       <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-        <h2 className="text-sm font-semibold text-slate-900">{formatShortDate(date)}</h2>
-        {now ? <span className="text-xs text-slate-400">· {relativeDueLabel(date, now)}</span> : null}
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{formatShortDate(date)}</h2>
+        {now ? <span className="text-xs text-slate-400 dark:text-slate-500">· {relativeDueLabel(date, now)}</span> : null}
         {isToday ? (
           <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-white">TODAY</span>
         ) : null}
@@ -46,7 +46,7 @@ export function TimelineDay({
         <CardBody className="space-y-3">
           <div className="flex items-center gap-3">
             <ProgressBar percent={progress.percent} label={`Progress for ${date}`} />
-            <span className="shrink-0 text-xs font-medium tabular-nums text-slate-500">
+            <span className="shrink-0 text-xs font-medium tabular-nums text-slate-500 dark:text-slate-400">
               {progress.done}/{progress.total}
             </span>
           </div>

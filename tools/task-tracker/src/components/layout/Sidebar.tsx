@@ -32,10 +32,14 @@ export function Sidebar() {
             aria-current={active ? "page" : undefined}
             className={cn(
               "flex flex-1 items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors lg:flex-none",
-              active ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+              active
+                ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white",
             )}
           >
-            <span className={cn(active ? "text-white" : "text-slate-400")}>{item.icon}</span>
+            <span className={cn(active ? "text-white dark:text-slate-900" : "text-slate-400 dark:text-slate-500")}>
+              {item.icon}
+            </span>
             <span>{item.label}</span>
           </Link>
         );

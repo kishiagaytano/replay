@@ -3,6 +3,7 @@ import "./globals.css";
 import { TaskProvider } from "@/lib/store/task-store";
 import { AppShell } from "@/components/layout/AppShell";
 import { ContentGate } from "@/components/layout/ContentGate";
+import { THEME_INIT_SCRIPT } from "@/lib/theme/theme-script";
 
 export const metadata: Metadata = {
   title: "rePlay · Team Tracker",
@@ -17,7 +18,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body>
         <TaskProvider>
           <AppShell>

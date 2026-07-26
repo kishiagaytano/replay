@@ -15,8 +15,8 @@ export function ConnectionBadge() {
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset",
         cloud
-          ? "bg-emerald-50 text-emerald-700 ring-emerald-600/20"
-          : "bg-slate-100 text-slate-500 ring-slate-500/20",
+          ? "bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-400/25"
+          : "bg-slate-100 text-slate-500 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-400/20",
       )}
       title={cloud ? "Connected to the shared database" : "Local only — changes stay in this browser"}
     >
