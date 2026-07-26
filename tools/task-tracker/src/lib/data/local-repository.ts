@@ -42,6 +42,10 @@ export class LocalTaskRepository implements TaskRepository {
     );
   }
 
+  async deleteAllTasks(): Promise<void> {
+    this.write(TASKS_KEY, []);
+  }
+
   async listMembers(): Promise<Member[]> {
     return this.readCollection(MEMBERS_KEY, MemberSchema, TEAM_MEMBERS);
   }

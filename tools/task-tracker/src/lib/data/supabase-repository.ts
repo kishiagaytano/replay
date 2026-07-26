@@ -35,6 +35,12 @@ export class SupabaseTaskRepository implements TaskRepository {
     if (error) throw error;
   }
 
+  async deleteAllTasks(): Promise<void> {
+    // PostgREST requires a filter on delete; `id <> ''` matches every row.
+    const { error } = await this.client.from("tasks").delete().neq("id", "");
+    if (error) throw error;
+  }
+
   async listMembers(): Promise<Member[]> {
     const { data, error } = await this.client.from("members").select("*");
     if (error) throw error;

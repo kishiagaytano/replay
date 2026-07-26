@@ -19,6 +19,8 @@ export interface TaskRepository {
   /** Patch only the provided fields of a task. */
   updateTask(id: string, patch: Partial<Task>): Promise<void>;
   deleteTask(id: string): Promise<void>;
+  /** Delete every task — used to clear the board before starting fresh. */
+  deleteAllTasks(): Promise<void>;
 
   listMembers(): Promise<Member[]>;
   /** Patch only the provided fields of a member (e.g. name / role). */

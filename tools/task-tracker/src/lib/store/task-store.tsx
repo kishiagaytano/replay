@@ -74,6 +74,7 @@ interface TaskContextValue {
   updateTask: (id: string, draft: TaskDraft) => void;
   moveTask: (id: string, status: TaskStatus) => void;
   deleteTask: (id: string) => void;
+  clearAllTasks: () => void;
   updateMember: (id: string, patch: Partial<Member>) => void;
   getMember: (id: string) => Member | undefined;
 }
@@ -167,6 +168,11 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     [persist],
   );
 
+  const clearAllTasks = useCallback(() => {
+    dispatch({ type: "SET", tasks: [] });
+    persist(taskRepository.deleteAllTasks());
+  }, [persist]);
+
   const updateMember = useCallback(
     (id: string, patch: Partial<Member>) => {
       dispatch({ type: "PATCH_MEMBER", id, patch });
@@ -191,10 +197,11 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       updateTask,
       moveTask,
       deleteTask,
+      clearAllTasks,
       updateMember,
       getMember,
     }),
-    [state, addTask, updateTask, moveTask, deleteTask, updateMember, getMember],
+    [state, addTask, updateTask, moveTask, deleteTask, clearAllTasks, updateMember, getMember],
   );
 
   return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>;
