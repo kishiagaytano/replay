@@ -32,7 +32,7 @@
 
 ### What rePlay is
 
-**rePlay is a gamified web platform that turns verified Philippine information crises into immersive, decision-based simulations.** Players relive real documented events — a typhoon flood warning, an election misinformation wave, an AI-enabled scam — exactly as they unfolded, making decisions under the same uncertainty real people faced at the time. After each case, the simulation collapses into the *actual historical timeline*, revealing what really happened, the evidence behind every message, and the consequences of each choice.
+**rePlay is a gamified web platform that turns verified Philippine information crises into immersive, decision-based simulations.** Players relive real documented events — a typhoon flood, an election misinformation wave, an AI-enabled scam — exactly as they unfolded, making decisions under the same uncertainty real people faced at the time. After each case, the simulation collapses into the *actual historical timeline*, revealing what really happened, the evidence behind every message, and the consequences of each choice.
 
 It is not a quiz app and not a fact-checker. It is **playable information history**: a living, growing archive of teachable information cases that educators, journalists, and institutions can contribute to over time.
 

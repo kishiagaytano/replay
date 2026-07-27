@@ -64,32 +64,27 @@ create policy "members: anon full access"
 -- Seed: team members
 -- ---------------------------------------------------------------------------
 insert into public.members (id, name, role, initials, color) values
-  ('kishia', 'Kishia', 'Lead · Product & Historical Cases', 'KI', 'bg-indigo-100 text-indigo-700 ring-indigo-600/20'),
-  ('gian',   'Gian',   'Engineering · Backend & AI',        'GI', 'bg-sky-100 text-sky-700 ring-sky-600/20'),
-  ('bads',   'Bads',   'Design & Frontend',                 'BA', 'bg-rose-100 text-rose-700 ring-rose-600/20'),
-  ('khylle', 'Khylle', 'Research & Proposal',               'KH', 'bg-teal-100 text-teal-700 ring-teal-600/20')
+  ('kishia', 'Kishia', 'Lead · Research / Content · QA Engineer', 'KI', 'bg-indigo-100 text-indigo-700 ring-indigo-600/20'),
+  ('gian',   'Gian',   'Database Engineer',                       'GI', 'bg-sky-100 text-sky-700 ring-sky-600/20'),
+  ('bads',   'Bads',   'Backend Engineer',                        'BA', 'bg-rose-100 text-rose-700 ring-rose-600/20'),
+  ('khylle', 'Khylle', 'Frontend Engineer',                       'KH', 'bg-teal-100 text-teal-700 ring-teal-600/20')
 on conflict (id) do nothing;
 
 -- ---------------------------------------------------------------------------
--- Seed: tasks (created_at / updated_at default to now())
+-- Seed: tasks — the D1–D11 deliverable plan (created_at / updated_at default to
+-- now()). Mirrors the shared board: concise objective per task; dependencies in
+-- `blocker` (e.g. "D2; D3"). Full specs live in docs/product-definition.md.
 -- ---------------------------------------------------------------------------
 insert into public.tasks (id, title, description, assignee_id, category, priority, status, due_date, blocker) values
-  ('t-001', 'Finalize rePlay proposal draft', 'Consolidate all sections into the UNESCO idea-proposal template; tighten problem statement and one-sentence pitch.', 'khylle', 'proposal', 'high', 'review', '2026-07-28', null),
-  ('t-002', 'Problem statement & source citations', 'NDRRMC / PIA / Vera Files references for the disaster-misinformation problem.', 'khylle', 'proposal', 'medium', 'done', '2026-07-24', null),
-  ('t-003', 'Verify Flood Warning case evidence', 'Collect and confirm real advisories, headlines and fact-checks for the dam-release rumor timeline. No claim ships without a source.', 'kishia', 'historical-cases', 'high', 'in-progress', '2026-07-29', 'Waiting on Vera Files archive access for the dam-release advisories.'),
-  ('t-004', 'Define Zod case & evidence schema', 'Implement the Case / SimulationNode / EvidenceItem schemas from CLAUDE.md section 6.', 'gian', 'backend', 'high', 'in-progress', '2026-07-28', null),
-  ('t-005', 'Build simulation engine (traversal + meters)', 'Pure, deterministic engine: node traversal, meter deltas, decision scoring, reveal derivation.', 'gian', 'backend', 'high', 'todo', '2026-07-31', null),
-  ('t-006', 'Scaffold Next.js project', 'Next.js App Router + TS strict + Tailwind, per CLAUDE.md.', 'bads', 'frontend', 'medium', 'done', '2026-07-25', null),
-  ('t-007', 'Case player wireframes (mobile-first)', 'Feed, decision prompt, live meters — designed for a mid-range Android on mobile data.', 'bads', 'design', 'medium', 'in-progress', '2026-07-29', null),
-  ('t-008', 'Author Flood Warning case content', 'Write the branching nodes + evidence items as validated content files.', 'kishia', 'historical-cases', 'high', 'todo', '2026-08-01', null),
-  ('t-009', 'Build case player UI (feed + decisions)', 'Wire the interactive simulation UI to the engine.', 'gian', 'frontend', 'high', 'todo', '2026-08-02', 'Blocked until the engine (#t-005) and schema (#t-004) land.'),
-  ('t-010', 'Timeline-collapse reveal animation', 'Branching timeline collapses into the real historical timeline (the money shot).', 'bads', 'design', 'medium', 'todo', '2026-08-03', null),
-  ('t-011', 'Evidence Explorer component', 'Post-case view: every message, its verdict, and a citation to the real source.', 'bads', 'frontend', 'medium', 'todo', '2026-08-03', null),
-  ('t-012', 'Reflection / Information Profile screen', 'Plain-language, non-judgmental insight + decision score.', 'gian', 'frontend', 'medium', 'todo', '2026-08-04', null),
-  ('t-013', 'Community Toolkit resources', 'Curate real disaster-communication resources for the case unlock.', 'khylle', 'research', 'low', 'todo', '2026-08-02', null),
-  ('t-014', 'Educator guide for Flood Warning', 'Discussion questions + learning outcomes.', 'khylle', 'proposal', 'low', 'todo', '2026-08-03', null),
-  ('t-015', 'Write pitch video script', 'Max 3 min; open with the Lola/dam-release hook, get to the solution by 0:30.', 'kishia', 'pitch-video', 'high', 'todo', '2026-08-04', null),
-  ('t-016', 'Record & edit pitch video', 'Screen-record the vertical slice; burn in English subtitles; clean audio.', 'kishia', 'pitch-video', 'high', 'todo', '2026-08-06', null),
-  ('t-017', 'Accessibility & mobile QA pass', 'Keyboard nav, contrast, reduced-motion, low-bandwidth check.', 'bads', 'testing', 'medium', 'todo', '2026-08-05', null),
-  ('t-018', 'Final deploy + submission dry run', 'Deploy to Vercel, verify the flagship case, rehearse the Tally submission.', 'gian', 'testing', 'high', 'todo', '2026-08-07', null)
+  ('d1',  'D1: Product Definition', 'Remove every ambiguity before anyone designs or builds — lock the case, loop, scope, pitch, audience, tracks, value, and success metric. See docs/product-definition.md.', 'kishia', 'research', 'high', 'review', '2026-07-27', null),
+  ('d2',  'D2: Historical Content & Research', 'Assemble the verified raw material for Case 001 (Typhoon Tino, Cebu) — every message and fact with a real citation. Distinguish media authenticity from claim accuracy.', 'kishia', 'research', 'high', 'todo', '2026-07-27', 'D1'),
+  ('d3',  'D3: UX Design', 'Design the whole experience as flows and wireframes first, so the schema can be derived from what the UI must show. Mobile-first.', 'khylle', 'design', 'high', 'in-progress', '2026-07-29', 'D1'),
+  ('d4',  'D4: Data / Content Schema', 'One validated schema for a Case, derived from UI needs plus real data. Everything downstream builds against it.', 'gian', 'backend', 'medium', 'todo', '2026-07-30', 'D2; D3'),
+  ('d5',  'D5: Case Content Authoring', 'Encode the D2 research into the D4 schema as a complete, validated, cited case file.', 'gian', 'frontend', 'medium', 'todo', '2026-08-01', 'D2; D4'),
+  ('d6',  'D6: Simulation Engine', 'A pure, deterministic engine: a validated Case plus player choices produce the node, meter state, and reflection. No React, no I/O.', 'bads', 'backend', 'medium', 'todo', '2026-08-02', 'D4'),
+  ('d7',  'D7: Frontend Implementation', 'Build the UI components that render engine state per the D3 UX. Mobile-first and accessible.', 'khylle', 'frontend', 'medium', 'todo', '2026-08-03', 'D3; D4'),
+  ('d8',  'D8: Integration', 'Assemble the real slice — engine plus authored content plus frontend — into one case playable end-to-end, deployed.', 'bads', 'backend', 'medium', 'todo', '2026-08-04', 'D5; D6; D7'),
+  ('d9',  'D9: QA / Testing', 'Prove the slice works and meets requirements before it is filmed and submitted.', 'kishia', 'testing', 'medium', 'todo', '2026-08-04', 'D8'),
+  ('d10', 'D10: Proposal Document', 'The proposal PDF covering all 8 UNESCO elements — clear, concise, in UNESCO language.', 'kishia', 'proposal', 'medium', 'todo', '2026-08-05', 'D1; D2; D8'),
+  ('d11', 'D11: Pitch Video', 'A 3-minute pitch video: story, solution, impact. Open with a Cebu family deciding whether an image is real — the flood was real, some images were not.', 'bads', 'pitch-video', 'low', 'todo', '2026-08-07', 'D1; D2; D8')
 on conflict (id) do nothing;

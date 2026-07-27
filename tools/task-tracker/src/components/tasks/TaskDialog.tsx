@@ -58,7 +58,7 @@ export function TaskDialog({
             autoFocus
             value={draft.title}
             onChange={(e) => set("title", e.target.value)}
-            placeholder="e.g. Author Flood Warning case content"
+            placeholder="e.g. Author The Flood Was Real case content"
           />
         </div>
 
