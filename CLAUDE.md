@@ -46,10 +46,14 @@ To help young people practice **responsible decision-making under uncertainty** 
 
 ### Elevator pitch (use verbatim)
 
-> **History already happened. Your decisions don't have to repeat it.**
-> rePlay is a gamified web platform that transforms verified Philippine documented history and information crises into immersive, decision-based simulations where players experience events as they unfolded in real life.
+> **History already happened. Your decisions do not have to repeat it.**
+> rePlay is a gamified web platform that transforms verified Philippine information crises into interactive, evidence-based simulations, empowering youth to build media and information literacy through real-world decision-making, reflection, and historical replay.
+
+**Case-specific hook:** *"The flood was real. Some of the images were not. Would you know what to trust—and when to act?"*
 
 **One line for the pitch video / judges:** *"We turned real information crises into the world's first playable classroom."*
+
+> The locked wording for the pitch, hook, and tagline lives in [`docs/product-definition.md`](docs/product-definition.md) §3 — the source of truth for Case 001.
 
 ### UNESCO context
 
@@ -98,7 +102,7 @@ The single mechanic we would keep if we had to cut everything else: the player e
 
 ### 2.5 Learning Through Decision-Making, Not Quizzes
 
-rePlay never says "correct/incorrect" mid-scenario. It teaches *judgment*, not answers. It shows how each choice moves **Community Trust, Information Spread, and Public Safety**, then reveals the documented reality afterward. The takeaway is a transferable habit ("verify before sharing"), not a memorized fact.
+rePlay never says "correct/incorrect" mid-scenario. It teaches *judgment*, not answers. It shows how each choice moves **Community Trust, Information Integrity, and Public Safety**, then reveals the documented reality afterward. The takeaway is a transferable habit ("verify before sharing"), not a memorized fact.
 
 ---
 
@@ -108,15 +112,15 @@ The MVP must let a player complete **one full case** on a phone, plus the scaffo
 
 ### 3.1 Must Have (MVP — required for submission)
 
-- **One complete, verified case, end-to-end.** Reference case: **"The Flood Warning"** (a reconstructed Philippine typhoon disaster-info crisis, e.g., dam-release rumor via family group chat). Fully sourced.
+- **One complete, verified case, end-to-end.** Flagship case: **Case 001 — "The Flood Was Real"** (Typhoon Tino / Kalmaegi, Cebu, Nov 3–7 2025 — real flooding circulating alongside AI-generated disaster imagery). Fully sourced. See [`docs/product-definition.md`](docs/product-definition.md) for the locked scope contract.
 - **Case player / simulation engine** driven by declarative case content (see §6). Supports:
   - Timed information "feed" (simulated Messenger/Facebook/TikTok/official-advisory messages arriving over time).
-  - **Branching decisions** (Share / Verify / Wait / Ignore / Ask), each altering state.
-  - Live **state meters**: Community Trust, Information Spread, Public Safety.
+  - **Branching decisions** (Verify / Share with context / Wait / Ignore / Ask or check an official source) — each node presents only the 2–4 that fit the situation, each altering state.
+  - Live **state meters**: Community Trust, Information Integrity, Public Safety.
 - **Historical Replay reveal**: branching timeline collapses into the real timeline; real advisories, headlines, fact-checks, and dates shown.
 - **Evidence Explorer**: for every message encountered, show its verification status + a citation to the real source.
 - **Reflection / Information Profile**: end-of-case summary of the player's behavior ("You relied on urgency more than evidence," "You verified before sharing") + a decision score.
-- **Community Toolkit unlock**: real-world, downloadable/linkable resources (e.g., Disaster Communication Toolkit) tied to the case.
+- **Community Toolkit unlock**: real-world, downloadable/linkable resources tied to the case (Case 001 card: "Verify Before You Share: Disaster Image Checklist").
 - **Case library / landing page** listing cases (even if only one is live) — establishes the "archive" framing.
 - **Mobile-first responsive UI**, accessible, Filipino-forward copy with English support.
 - **Educator Guide** for the case (discussion questions + learning outcomes), viewable/printable.
@@ -182,7 +186,7 @@ replay/
 │   └── cases/<case-id>/       # Per-case media (compressed, alt-texted)
 ├── content/
 │   └── cases/                 # ← THE ARCHIVE. One folder per case.
-│       └── flood-warning/
+│       └── the-flood-was-real/ # Case 001 (flagship)
 │           ├── case.ts        # Case definition (validated by Zod schema)
 │           ├── evidence.ts     # Evidence items + citations
 │           ├── educator.md     # Educator guide (discussion + outcomes)
@@ -243,13 +247,13 @@ Mandated by the product design — all five parts are required:
 
 ```ts
 type Case = {
-  id: string;                 // "flood-warning"
-  code: string;               // "Case 003" — player-facing
-  title: string;              // "The Flood Warning"
+  id: string;                 // "the-flood-was-real"
+  code: string;               // "Case 001" — player-facing
+  title: string;              // "The Flood Was Real"
   track: ("ai-mil" | "mil-education" | ...)[];
   competency: MILCompetency;  // strongest ONE, e.g. "critical-evaluation"
   historicalContext: {
-    realEvent: string;        // e.g. "Typhoon Carina, 2024"
+    realEvent: string;        // e.g. "Typhoon Tino (Kalmaegi), Cebu, 2025"
     summary: string;
     dateRange: string;
     sources: SourceRef[];     // REQUIRED — provenance for the reconstruction
@@ -266,7 +270,7 @@ type SimulationNode = {
   id: string;
   incoming: IncomingInfo[];   // messages that "arrive" (with source/channel)
   timerSeconds?: number;      // optional pressure
-  decisions: Decision[];      // Share / Verify / Wait / Ignore / Ask ...
+  decisions: Decision[];      // Verify / Share with context / Wait / Ignore / Ask (2–4 per node)
 };
 
 type Decision = {
@@ -274,7 +278,7 @@ type Decision = {
   label: string;
   effects: {                  // deltas applied to meters
     communityTrust?: number;
-    informationSpread?: number;
+    informationIntegrity?: number;
     publicSafety?: number;
     decisionScore?: number;
   };
@@ -286,7 +290,11 @@ type EvidenceItem = {
   id: string;
   channel: "messenger" | "facebook" | "tiktok" | "official-advisory" | ...;
   claim: string;
-  verdict: "true" | "false" | "misleading" | "unverified-at-the-time";
+  // Media authenticity and claim accuracy are SEPARATE questions (§13 teaching
+  // point): a real photo can carry a false caption; a synthetic image can refer
+  // to a real event. Record both.
+  mediaStatus: "authentic" | "synthetic" | "altered" | "miscaptioned" | "not-yet-verifiable";
+  claimAccuracy: "accurate" | "false" | "misleading" | "unverified-at-the-time";
   citation: SourceRef;        // REQUIRED — no evidence without a source
 };
 
@@ -369,7 +377,7 @@ Authoring a case = writing a `content/cases/<id>/` folder that passes the Zod sc
 
 - **Tone:** hopeful/empowering, calm, credible — a public-interest civic tool, not a startup or a game with loot boxes. Serious subject, warm delivery.
 - **Motif:** the "replay/timeline" — branching paths that resolve into a single real timeline. The signature moment is the **collapse animation** (branching → real history).
-- **Palette & type:** define as design tokens in `tailwind.config`. High legibility first; restrained, purposeful color. Meters (Community Trust / Information Spread / Public Safety) get consistent, colorblind-safe hues used nowhere else.
+- **Palette & type:** define as design tokens in `tailwind.config`. High legibility first; restrained, purposeful color. Meters (Community Trust / Information Integrity / Public Safety) get consistent, colorblind-safe hues used nowhere else.
 
 ### Design language
 
@@ -409,9 +417,9 @@ How replay cases work — the loop, in order:
 ### Historical Replay (core loop)
 
 1. **Enter the reconstructed event.** Information arrives over time through simulated channels (Messenger, Facebook, TikTok, official advisories) matching how it really spread.
-2. **Decide under uncertainty.** At each node the player chooses: **Share, Verify, Wait, Ignore, Ask someone** (choices vary per case). A timer may add pressure.
-3. **See live consequences.** Choices move **Community Trust, Information Spread, Public Safety** in real time — no "correct/incorrect."
-4. **The reveal.** At the end, the branching timeline **collapses into the real historical timeline** — real headlines, real PAGASA/NDRRMC advisories, real fact-checks, real dates — banner: *"This scenario was reconstructed from verified Philippine sources."*
+2. **Decide under uncertainty.** At each node the player chooses from the action vocabulary — **Verify, Share with context, Wait, Ignore, Ask or check an official source** (only the 2–4 that fit the node are shown; choices vary per case). A timer may add pressure.
+3. **See live consequences.** Choices move **Community Trust, Information Integrity, Public Safety** in real time — no "correct/incorrect."
+4. **The reveal.** At the end, the branching timeline **collapses into the real historical timeline** — real headlines, real PAGASA/OCD/PIA advisories, real fact-checks, real dates — banner: *"This scenario was reconstructed from verified Philippine sources."*
 
 ### Branching decisions
 
@@ -421,15 +429,15 @@ How replay cases work — the loop, in order:
 
 ### Evidence Explorer
 
-- Post-case, the player can inspect **every message they saw**: the claim, its verdict (true / false / misleading / unverified-at-the-time), and a **citation to the real source**. This is the integrity layer.
+- Post-case, the player can inspect **every message they saw**: the claim, its **media status** (authentic / synthetic / altered / miscaptioned / not-yet-verifiable), its **claim accuracy** (accurate / false / misleading / unverified-at-the-time), and a **citation to the real source**. Authenticity and accuracy are separate questions (§13 of the product definition). This is the integrity layer.
 
 ### Community Toolkit
 
-- Each case unlocks **real-world, actionable resources** (e.g., a Disaster Communication Toolkit) — the bridge from "played a game" to "changed behavior." Real links/downloads, tied to the case's domain.
+- Each case unlocks **real-world, actionable resources** (Case 001: "Verify Before You Share: Disaster Image Checklist") — the bridge from "played a game" to "changed behavior." Real links/downloads, tied to the case's domain.
 
 ### Reflection engine
 
-- Analyzes the player's decision pattern and produces plain-language, non-judgmental insight ("You relied on urgency more than evidence," "You verified before sharing") plus a **decision score** and, where assessment exists, an improvement delta.
+- Analyzes the player's decision pattern and produces plain-language, non-judgmental insight ("You relied on urgency more than evidence," "You verified before sharing") plus a **decision score** and, where assessment exists, an improvement delta. Deterministic and rule-based (no generative AI). Case 001 resolves to one of three locked behavioral profiles: **Responsible Crisis Communicator**, **Skeptical but Delayed**, or **Emotional Amplifier** — descriptive, never punitive.
 
 ### Player profile (Information Profile)
 
@@ -543,7 +551,7 @@ State: repo is empty and not yet under git. Nothing built yet.
 1. **Initialize the project skeleton**: Next.js + TypeScript (strict) + Tailwind + ESLint/Prettier + Vitest; the folder structure from §5; `README.md` with local dev setup. Set up git + `main` + first PR.
 2. **Define the Zod case & evidence schemas** (`src/lib/schema`) and derive domain types. This is the backbone — do it before UI.
 3. **Build the pure simulation engine** (`src/lib/engine`) with unit tests: node traversal, meter/scoring math, deterministic reveal derivation. No React yet.
-4. **Author the flagship case** `content/cases/flood-warning/` (with real, cited sources) that validates against the schema. Coordinate the *content/verification* work with the team; engineers can start with a sourced draft.
+4. **Author the flagship case** `content/cases/the-flood-was-real/` (Case 001, with real cited sources) that validates against the schema, following [`docs/product-definition.md`](docs/product-definition.md) and clearing its Source Gate (§20). Coordinate the *content/verification* work with the team; engineers can start with a sourced draft.
 5. **Build the case player UI** (feed, decision prompt, live meters) wired to the engine, `"use client"`, mobile-first.
 6. **Build the reveal → Evidence Explorer → Reflection/Profile → Community Toolkit** flow for the flagship case.
 7. **Landing / case library page** framing rePlay as a growing archive.
@@ -559,7 +567,7 @@ Milestones from foundation to deployment. Hackathon milestones (M0–M4) precede
 
 - **M0 — Foundation.** Tooling, structure, CI (typecheck + lint + tests + schema validation), Vercel preview deploys, git workflow live.
 - **M1 — Engine & Schema.** Zod case/evidence schemas; pure, tested simulation engine (traversal, meters, scoring, reveal derivation). Content decoupled from UI proven by tests.
-- **M2 — Flagship Case Content.** "The Flood Warning" authored and fully cited; passes schema validation; `sources.md` complete; educator guide + toolkit drafted.
+- **M2 — Flagship Case Content.** Case 001 "The Flood Was Real" authored and fully cited; passes schema validation and the Source Gate (product definition §20); `sources.md` complete; educator guide + toolkit drafted.
 - **M3 — Playable Vertical Slice.** Full loop for the flagship case on mobile: simulation → reveal → evidence → reflection/profile → toolkit. This is the demoable product.
 - **M4 — Submission Polish.** Landing/library page, accessibility passes, low-bandwidth considerations, pitch-video money shots, final deploy. **Submit by 7 Aug 2026 (hard cutoff 16 Aug).**
 - **M5 — Second Case & Assessment.** Prove the engine generalizes; add pre/post assessment to evidence the impact metric.
