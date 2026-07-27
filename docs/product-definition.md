@@ -10,10 +10,11 @@
 | **Proposed case id** | `the-flood-was-real` (kebab-case, stable) |
 | **Historical setting** | Typhoon Tino (Kalmaegi), Cebu, Philippines |
 | **Reconstruction window** | November 3–7, 2025 |
-| **Version** | 0.1 (draft — awaiting team sign-off) |
+| **Version** | 1.0 (signed off — locked) |
 | **Prepared** | 2026-07-27 |
+| **Signed off** | 2026-07-27 |
 | **Internal completion target** | August 7, 2026 |
-| **Status** | **Decisions only.** No UI design, schema, database, backend logic, or frontend code is authorized by this document. |
+| **Status** | **Locked (decisions only).** Approved by the team; scope is frozen. No UI design, schema, database, backend logic, or frontend code is authorized by this document. |
 
 > **Source-of-truth statement.** This document is the scope contract for the rePlay MVP. When a later idea conflicts with it, the team must either reject the idea or formally revise this document (with sign-off) before proceeding. **Upon sign-off, this document supersedes any conflicting Case 001 / flagship-case references in `CLAUDE.md`; `CLAUDE.md` is to be corrected in a separate, approved change** (see §20–§22).
 
@@ -400,13 +401,13 @@ This Product Definition may be approved now, but **case authoring cannot be mark
 
 This Product Definition is complete when:
 
-- [ ] **Kish** approves the case, pitch, audience, loop, scope, and success metric.
-- [ ] **Gigi** confirms the source-backed content can be represented as structured data.
-- [ ] **Bads** confirms the core loop and outcomes are technically interpretable without inventing product behavior.
-- [ ] **Khylle** confirms the player journey is clear enough to wireframe without making new product decisions.
-- [ ] All four members understand what is explicitly excluded (§15).
-- [ ] The team signs §22.
-- [ ] Conflicting references in `CLAUDE.md` are updated in a separate approved change.
+- [x] **Kish** approves the case, pitch, audience, loop, scope, and success metric.
+- [x] **Gigi** confirms the source-backed content can be represented as structured data.
+- [x] **Bads** confirms the core loop and outcomes are technically interpretable without inventing product behavior.
+- [x] **Khylle** confirms the player journey is clear enough to wireframe without making new product decisions.
+- [x] All four members understand what is explicitly excluded (§15).
+- [x] The team signs §22.
+- [x] Conflicting references in `CLAUDE.md` are updated in a separate approved change.
 
 ---
 
@@ -416,15 +417,16 @@ This Product Definition is complete when:
 
 | Member | Role | Approved | Date |
 |---|---|---|---|
-| Kish | Lead · Research / Content · QA | ☐ | |
-| Gigi | Database Engineer | ☐ | |
-| Bads | Backend Engineer | ☐ | |
-| Khylle | Frontend Engineer | ☐ | |
+| Kish | Lead · Research / Content · QA | ☑ | 2026-07-27 |
+| Gigi | Case Data Architect | ☑ | 2026-07-27 |
+| Bads | Backend Engineer | ☑ | 2026-07-27 |
+| Khylle | Frontend Engineer | ☑ | 2026-07-27 |
 
 **Change-control log**
 
 | Version | Date | Author | Summary |
 |---|---|---|---|
 | 0.1 | 2026-07-27 | Team (drafted for review) | Initial formalization of Case 001 — *The Flood Was Real* (Typhoon Tino, Cebu). Supersedes the older "Flood Warning" reference case pending sign-off and a separate `CLAUDE.md` update. |
+| 1.0 | 2026-07-27 | Team | **Signed off — scope locked.** `CLAUDE.md` conflicts already reconciled (commit `ca6ea63`). Gigi's role recorded as **Case Data Architect**. D2 (case research pack) authorized to begin. |
 
 > No excluded item (§15) may enter the MVP, and no locked decision (§2) may change, without a new version row here and renewed sign-off above.
