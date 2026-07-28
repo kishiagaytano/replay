@@ -1,65 +1,121 @@
-import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="flex flex-col flex-1 min-h-screen items-center justify-center p-6">
+      <div className="max-w-md w-full text-center space-y-8 animate-fade-in">
+        {/* Logo */}
+        <div className="flex justify-center">
+          <div
+            className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-2xl"
+            style={{
+              background: "linear-gradient(135deg, #C4863A 0%, #A06E28 100%)",
+              boxShadow: "0 20px 40px rgba(196, 134, 58, 0.3)",
+            }}
+          >
+            <svg
+              className="w-10 h-10 text-storm-text"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div>
+          <h1 className="text-4xl font-bold text-storm-text">rePlay</h1>
+          <p className="text-storm-muted mt-2 text-sm">
+            Information Crisis Simulator
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <div className="gradient-divider max-w-xs mx-auto" />
+
+        <p className="text-storm-muted text-sm leading-relaxed max-w-sm mx-auto">
+          History already happened. Your decisions do not have to repeat it.
+        </p>
+
+        {/* Featured Case Card */}
+        <Link
+          href="/cases"
+          className="block rounded-xl p-5 border border-storm-dim/25 hover:border-storm-accent/50 transition-colors text-left"
+          style={{ background: "rgba(28,25,22,0.5)" }}
+        >
+          <div className="text-storm-accent text-xs font-semibold uppercase tracking-wider mb-2">
+            Featured Case
+          </div>
+          <h3 className="text-storm-text font-bold text-lg">
+            Case 001: The Flood Was Real
+          </h3>
+          <p className="text-storm-muted text-sm mt-1">
+            Typhoon Tino (Kalmaegi), Cebu, 2025
+          </p>
+          <div className="mt-3 flex items-center gap-3 text-xs text-storm-dim">
+            <span className="flex items-center gap-1">
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              Nov 2025
+            </span>
+            <span className="w-1 h-1 rounded-full bg-storm-dim" />
+            <span className="flex items-center gap-1">7 Decisions</span>
+            <span className="w-1 h-1 rounded-full bg-storm-dim" />
+            <span className="flex items-center gap-1">~8 min</span>
+          </div>
+        </Link>
+
+        <Link
+          href="/cases"
+          className="inline-flex items-center gap-2 font-bold py-4 px-10 rounded-xl transition-all shadow-2xl text-lg"
+          style={{
+            background: "linear-gradient(135deg, #C4863A 0%, #D49A44 100%)",
+            color: "#0D0C0A",
+            boxShadow: "0 20px 40px rgba(196, 134, 58, 0.3)",
+          }}
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          Start Simulation
+        </Link>
+
+        <p className="text-xs text-storm-dim">
+          No account needed | Built for UNESCO Youth Hackathon 2026
+        </p>
+      </div>
     </div>
   );
 }
