@@ -1,7 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-
 interface CharacterSpriteProps {
   spriteId?: string;
   speaker?: string;
@@ -13,8 +11,8 @@ interface CharacterSpriteProps {
  */
 const PIXEL_PNGS: Record<string, string> = {
   lola_worried: '/vn-assets/characters/lola/pixel/lola_pixel.png',
-  maria_urgent: '/vn-assets/characters/maria/pixel/maria_pixel.png',
-  maria_skeptical: '/vn-assets/characters/maria/pixel/maria_pixel.png', // same base
+  maria_urgent: '/vn-assets/characters/maria/pixel/maria_pixel_urgent.png',
+  maria_skeptical: '/vn-assets/characters/maria/pixel/maria_pixel_concerned.png',
   jeff_concerned: '/vn-assets/characters/jeff/pixel/jeff_pixel.png',
 };
 
@@ -177,14 +175,11 @@ export function CharacterSprite({ spriteId, speaker }: CharacterSpriteProps) {
   if (pngPath) {
     return (
       <div className="absolute bottom-24 left-4 sm:left-8 md:left-16 flex flex-col items-center animate-fade-in">
-        <div className="image-pixel relative w-[192px] h-[288px]">
-          <Image
+        <div className="image-pixel relative inline-flex max-h-[288px] max-w-[240px]">
+          <img
             src={pngPath}
             alt={speaker ?? 'Character'}
-            fill
-            className="object-contain image-pixel"
-            priority
-            unoptimized
+            className="image-pixel h-auto max-h-[288px] w-auto max-w-[240px] object-contain"
           />
           {/* Soft glow */}
           <div
