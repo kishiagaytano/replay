@@ -151,6 +151,7 @@ export function VNStage() {
       {showChoices && !transitionOut && (
         <ChoicePrompt
           choices={currentNode.vnChoices!}
+          decisions={currentNode.decisions}
           onChoose={handleChoice}
         />
       )}
