@@ -19,9 +19,7 @@ export function getEvidenceExplorerEntries(): EvidenceExplorerEntry[] {
     mediaStatus: ev.mediaStatus,
     claimAccuracy: ev.claimAccuracy,
     verificationMethod: getVerificationMethod(ev.mediaStatus),
-    publisher: ev.citation.publisher,
-    publishDate: ev.citation.date,
-    citation: ev.citation,
+    citations: ev.citations,
     teachingPoint: getTeachingPoint(ev.id),
   }));
 }

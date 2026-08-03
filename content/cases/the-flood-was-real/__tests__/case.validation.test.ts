@@ -11,7 +11,7 @@ describe('Case 001 validation', () => {
     expect(result.success).toBe(true);
   });
 
-  it('has exactly 8 nodes (hook + 7 story nodes)', () => {
+  it('has the hook plus 7 evidence-matrix nodes', () => {
     expect(case001.nodes).toHaveLength(8);
   });
 
@@ -30,6 +30,21 @@ describe('Case 001 validation', () => {
         if (decision.next !== 'END') {
           expect(nodeIds.has(decision.next)).toBe(true);
         }
+      }
+    }
+  });
+
+  it('gives every decision complete meter and profile effects', () => {
+    for (const node of case001.nodes) {
+      expect(node.decisions.length).toBeGreaterThanOrEqual(2);
+      expect(node.decisions.length).toBeLessThanOrEqual(4);
+      for (const decision of node.decisions) {
+        expect(decision.effects).toHaveProperty('communityTrust');
+        expect(decision.effects).toHaveProperty('informationIntegrity');
+        expect(decision.effects).toHaveProperty('publicSafety');
+        expect(decision.profileEffects).toHaveProperty('responsible');
+        expect(decision.profileEffects).toHaveProperty('skeptical');
+        expect(decision.profileEffects).toHaveProperty('emotional');
       }
     }
   });
