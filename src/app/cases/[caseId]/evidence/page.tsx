@@ -97,29 +97,34 @@ export default async function EvidencePage({
                   />
                 </div>
 
-                {/* Citation */}
-                <div className="rounded-lg bg-storm-surface p-3">
-                  <div className="text-storm-dim text-xs uppercase tracking-wider mb-1">
-                    Source
+                {/* Sources */}
+                <div className="space-y-2">
+                  <div className="text-storm-dim text-xs uppercase tracking-wider">
+                    Source{item.citations.length !== 1 ? 's' : ''}
                   </div>
-                  <p className="text-storm-text text-sm">{item.citation.publisher}</p>
-                  <p className="text-storm-muted text-xs mt-0.5">{item.citation.title}</p>
-                  <div className="flex items-center gap-2 mt-1 text-xs text-storm-dim">
-                    <span>{item.citation.date}</span>
-                    {item.citation.url && (
-                      <>
-                        <span className="w-1 h-1 rounded-full bg-storm-dim" />
-                        <a
-                          href={item.citation.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-storm-accent hover:underline"
-                        >
-                          View source
-                        </a>
-                      </>
-                    )}
-                  </div>
+                  {item.citations.map((source, index) => (
+                    <div key={`${source.url ?? source.title}-${index}`} className="rounded-lg bg-storm-surface p-3">
+                      <p className="text-storm-text text-sm">{source.publisher}</p>
+                      <p className="text-storm-muted text-xs mt-0.5">{source.title}</p>
+                      <div className="flex items-center gap-2 mt-1 text-xs text-storm-dim">
+                        <span>{source.date}</span>
+                        {source.url && (
+                          <>
+                            <span className="w-1 h-1 rounded-full bg-storm-dim" />
+                            <a
+                              href={source.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-storm-accent hover:underline"
+                            >
+                              View source
+                            </a>
+                          </>
+                        )}
+                      </div>
+                      {source.note && <p className="text-storm-dim text-xs mt-1 italic">{source.note}</p>}
+                    </div>
+                  ))}
                 </div>
 
                 {/* Note */}

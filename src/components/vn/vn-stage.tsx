@@ -8,6 +8,7 @@ import { CharacterSprite } from './character-sprite';
 import { TextBox } from './text-box';
 import { DeviceOverlay } from './device-overlay';
 import { ChoicePrompt } from './choice-prompt';
+import type { SimulationState } from '@/lib/engine/simulation-engine';
 
 type StagePhase = 'overlay' | 'typing' | 'choices' | 'transitioning';
 
@@ -16,7 +17,7 @@ type StagePhase = 'overlay' | 'typing' | 'choices' | 'transitioning';
  * Orchestrates the scene flow: Overlay → Typing → Choices → Transition.
  */
 export function VNStage() {
-  const { currentNode, makeDecision, completed, profile, reset, init, phase, caseId } = useSimulation();
+  const { currentNode, makeDecision, completed, profile, meters, reset, init, phase, caseId } = useSimulation();
   const [stagePhase, setStagePhase] = useState<StagePhase>('overlay');
   const [transitionOut, setTransitionOut] = useState(false);
   const nodeRef = useRef(currentNode);
@@ -63,14 +64,14 @@ export function VNStage() {
   const handleOverlayDismiss = useCallback(() => {
     if (currentNode?.text) {
       setStagePhase('typing');
-    } else if (currentNode?.vnChoices) {
+    } else if (currentNode?.decisions.length) {
       setStagePhase('choices');
     }
   }, [currentNode]);
 
   // Handle text completion
   const handleTextComplete = useCallback(() => {
-    if (currentNode?.vnChoices) {
+    if (currentNode?.decisions.length) {
       setStagePhase('choices');
     }
   }, [currentNode]);
@@ -91,6 +92,7 @@ export function VNStage() {
     return (
       <CompletionScreen
         profile={profile}
+        meters={meters}
         onReplay={() => { reset(); }}
         caseId={caseId ?? ''}
       />
@@ -108,7 +110,7 @@ export function VNStage() {
 
   const hasOverlay = currentNode.overlay;
   const hasText = !!currentNode.text;
-  const hasChoices = !!currentNode.vnChoices && currentNode.vnChoices.length > 0;
+  const hasChoices = currentNode.decisions.length > 0;
   const showChoices = stagePhase === 'choices' && hasChoices;
   const showOverlay = stagePhase === 'overlay' && hasOverlay;
 
@@ -150,7 +152,6 @@ export function VNStage() {
       {/* Choice prompt */}
       {showChoices && !transitionOut && (
         <ChoicePrompt
-          choices={currentNode.vnChoices!}
           decisions={currentNode.decisions}
           onChoose={handleChoice}
         />
@@ -163,10 +164,12 @@ export function VNStage() {
 
 function CompletionScreen({
   profile,
+  meters,
   onReplay,
   caseId,
 }: {
   profile: { id: string; title: string; description: string };
+  meters: SimulationState;
   onReplay: () => void;
   caseId: string;
 }) {
@@ -189,6 +192,17 @@ function CompletionScreen({
             {profile.description}
           </p>
         </div>
+
+        <section className="text-left" aria-labelledby="final-indicators">
+          <h3 id="final-indicators" className="text-storm-accent text-xs font-bold uppercase tracking-widest mb-3 text-center">
+            Final Learning Indicators
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <MeterCard label="Community Trust" value={meters.communityTrust} color="#C4863A" />
+            <MeterCard label="Information Integrity" value={meters.informationIntegrity} color="#4A7C5C" />
+            <MeterCard label="Public Safety" value={meters.publicSafety} color="#D49A44" />
+          </div>
+        </section>
 
         <div className="gradient-divider max-w-xs mx-auto" />
 
@@ -239,6 +253,21 @@ function CompletionScreen({
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function MeterCard({ label, value, color }: { label: string; value: number; color: string }) {
+  return (
+    <div className="rounded-xl border border-storm-dim/25 bg-storm-surface p-3">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="text-storm-muted text-xs leading-tight">{label}</span>
+        <span className="text-lg font-bold" style={{ color }}>{value}</span>
+      </div>
+      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-storm-bg" aria-label={`${label}: ${value} out of 100`}>
+        <div className="h-full rounded-full transition-all" style={{ width: `${value}%`, backgroundColor: color }} />
+      </div>
+      <div className="mt-1 text-right text-[10px] uppercase tracking-wide text-storm-dim">out of 100</div>
     </div>
   );
 }

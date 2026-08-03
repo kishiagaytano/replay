@@ -12,18 +12,27 @@ export type SourceRef = z.infer<typeof sourceRefSchema>;
 
 // ── Decision Effects (meter deltas) ──
 export const decisionEffectsSchema = z.object({
-  communityTrust: z.number().int().optional().default(0),
-  informationIntegrity: z.number().int().optional().default(0),
-  publicSafety: z.number().int().optional().default(0),
-  decisionScore: z.number().int().optional(),
+  communityTrust: z.number().int().min(-20).max(20),
+  informationIntegrity: z.number().int().min(-20).max(20),
+  publicSafety: z.number().int().min(-20).max(20),
 });
 export type DecisionEffects = z.infer<typeof decisionEffectsSchema>;
+
+// â”€â”€ Behavioral Profile Effects â”€â”€
+export const profileEffectsSchema = z.object({
+  responsible: z.number().int().min(-3).max(3),
+  skeptical: z.number().int().min(-3).max(3),
+  emotional: z.number().int().min(-3).max(3),
+});
+export type ProfileEffects = z.infer<typeof profileEffectsSchema>;
 
 // ── Decision ──
 export const decisionSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
+  timerSeconds: z.number().int().positive().optional(),
   effects: decisionEffectsSchema,
+  profileEffects: profileEffectsSchema,
   next: z.string(), // node id or "END"
   evidenceId: z.string().optional(),
 });
@@ -37,14 +46,6 @@ export const vnOverlaySchema = z.object({
 }).optional();
 export type VNOverlay = z.infer<typeof vnOverlaySchema>;
 
-// ── VN Choice ──
-export const vnChoiceSchema = z.object({
-  id: z.string().min(1),
-  label: z.string().min(1),
-  timerSeconds: z.number().int().positive().optional(),
-});
-export type VNChoice = z.infer<typeof vnChoiceSchema>;
-
 // ── Simulation Node (engine data + VN presentation data) ──
 export const simulationNodeSchema = z.object({
   id: z.string().min(1),
@@ -54,14 +55,12 @@ export const simulationNodeSchema = z.object({
   background: z.string().optional(),
   overlay: vnOverlaySchema,
   text: z.string().optional(),
-  vnChoices: z.array(vnChoiceSchema).optional(),
   // Engine fields
   incoming: z.array(z.object({
     channel: z.enum(['messenger', 'facebook', 'tiktok', 'official-advisory', 'notification']),
     text: z.string(),
     sender: z.string().optional(),
   })).optional(),
-  timerSeconds: z.number().int().positive().optional(),
   decisions: z.array(decisionSchema).min(1, 'Each node must have at least one decision'),
 });
 export type SimulationNode = z.infer<typeof simulationNodeSchema>;
@@ -73,7 +72,7 @@ export const evidenceItemSchema = z.object({
   claim: z.string().min(1, 'Claim text is required'),
   mediaStatus: z.enum(['authentic', 'synthetic', 'altered', 'miscaptioned', 'not-yet-verifiable']),
   claimAccuracy: z.enum(['accurate', 'false', 'misleading', 'unverified-at-the-time']),
-  citation: sourceRefSchema,
+  citations: z.array(sourceRefSchema).min(1, 'At least one citation is required'),
   note: z.string().optional(),
 });
 export type EvidenceItem = z.infer<typeof evidenceItemSchema>;
@@ -130,12 +129,7 @@ export const caseSchema = z.object({
   nodes: z.array(simulationNodeSchema).min(1, 'At least one node is required'),
   entryNodeId: z.string().min(1),
   evidence: z.array(evidenceItemSchema).min(1, 'At least one evidence item is required'),
-  educatorGuide: z.string().optional(), // Markdown content or file reference
   toolkit: z.array(toolkitResourceSchema).optional().default([]),
   reflection: reflectionConfigSchema.optional(),
-  characters: z.record(z.string(), z.object({
-    name: z.string(),
-    avatar: z.string().optional(),
-  })).optional(),
 });
 export type Case = z.infer<typeof caseSchema>;

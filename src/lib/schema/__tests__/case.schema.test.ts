@@ -27,13 +27,29 @@ describe('evidenceItemSchema', () => {
       claim: 'Cebu placed on Red Alert',
       mediaStatus: 'authentic',
       claimAccuracy: 'accurate',
-      citation: {
+      citations: [{
         publisher: 'PIA',
         title: 'Red alert status raised over Cebu',
         date: '2025-11-03',
-      },
+      }],
     };
     expect(() => evidenceItemSchema.parse(item)).not.toThrow();
+  });
+
+  it('accepts multiple citations and rejects an empty citation list', () => {
+    const item = {
+      id: 'E2',
+      channel: 'official-advisory',
+      claim: 'A verified warning is active.',
+      mediaStatus: 'authentic',
+      claimAccuracy: 'accurate',
+      citations: [
+        { publisher: 'PAGASA', title: 'Bulletin', date: '2025-11-04' },
+        { publisher: 'DSWD', title: 'DROMIC Report #2', date: '2025-11-04' },
+      ],
+    };
+    expect(() => evidenceItemSchema.parse(item)).not.toThrow();
+    expect(() => evidenceItemSchema.parse({ ...item, citations: [] })).toThrow();
   });
 });
 
@@ -42,23 +58,23 @@ describe('decisionSchema', () => {
     const decision = {
       id: 'verify',
       label: 'VERIFY',
+      timerSeconds: 5,
       effects: { communityTrust: 10, informationIntegrity: 8, publicSafety: 5 },
+      profileEffects: { responsible: 3, skeptical: -1, emotional: -2 },
       next: 'node-02',
     };
-    expect(() => decisionSchema.parse(decision)).not.toThrow();
+    const parsed = decisionSchema.parse(decision);
+    expect(parsed.timerSeconds).toBe(5);
   });
 
-  it('defaults missing effects to 0', () => {
+  it('requires all three meter effects and profile effects', () => {
     const decision = {
       id: 'ignore',
       label: 'IGNORE',
       effects: {},
       next: 'node-02',
     };
-    const parsed = decisionSchema.parse(decision);
-    expect(parsed.effects.communityTrust).toBe(0);
-    expect(parsed.effects.informationIntegrity).toBe(0);
-    expect(parsed.effects.publicSafety).toBe(0);
+    expect(() => decisionSchema.parse(decision)).toThrow();
   });
 });
 
@@ -89,7 +105,8 @@ describe('caseSchema', () => {
         decisions: [{
           id: 'verify',
           label: 'VERIFY',
-          effects: { communityTrust: 5 },
+          effects: { communityTrust: 5, informationIntegrity: 8, publicSafety: 5 },
+          profileEffects: { responsible: 3, skeptical: -1, emotional: -2 },
           next: 'node-02',
         }],
       }],
@@ -100,11 +117,11 @@ describe('caseSchema', () => {
         claim: 'Red Alert in Cebu',
         mediaStatus: 'authentic',
         claimAccuracy: 'accurate',
-        citation: {
+        citations: [{
           publisher: 'PIA',
           title: 'Red alert status',
           date: '2025-11-03',
-        },
+        }],
       }],
     };
     expect(() => caseSchema.parse(minimalCase)).not.toThrow();
@@ -125,7 +142,13 @@ describe('caseSchema', () => {
       },
       nodes: [{
         id: 'n1',
-        decisions: [{ id: 'd1', label: 'OK', effects: {}, next: 'END' }],
+        decisions: [{
+          id: 'd1',
+          label: 'OK',
+          effects: { communityTrust: 0, informationIntegrity: 0, publicSafety: 0 },
+          profileEffects: { responsible: 0, skeptical: 0, emotional: 0 },
+          next: 'END',
+        }],
       }],
       entryNodeId: 'n1',
       evidence: [], // Empty evidence array

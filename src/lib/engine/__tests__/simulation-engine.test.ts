@@ -25,8 +25,8 @@ describe('SimulationEngine', () => {
 
   it('makeDecision applies effects and advances', () => {
     const engine = new SimulationEngine(case001);
-    const nextNode = engine.makeDecision('verify');
-    // "verify" on tino-00 has effects: communityTrust: 8, informationIntegrity: 10, publicSafety: 5
+    const nextNode = engine.makeDecision('open_official_source');
+    // The hook decision checks the source before responding to the group.
     const state = engine.getState();
     expect(state.communityTrust).toBe(58);
     expect(state.informationIntegrity).toBe(60);
@@ -42,7 +42,7 @@ describe('SimulationEngine', () => {
 
   it('reset restores initial state', () => {
     const engine = new SimulationEngine(case001);
-    engine.makeDecision('verify');
+    engine.makeDecision('open_official_source');
     engine.reset();
     expect(engine.getState()).toEqual({ communityTrust: 50, informationIntegrity: 50, publicSafety: 50 });
     expect(engine.getHistory()).toHaveLength(0);
@@ -53,14 +53,14 @@ describe('SimulationEngine', () => {
     const engine = new SimulationEngine(case001);
     // Play through all nodes
     const path = [
-      'verify',   // tino-00 → tino-01
-      'verify_pagasa', // tino-01 → tino-02
-      'verify_first',  // tino-02 → tino-03
-      'verify_context', // tino-03 → tino-04
-      'verify_image',   // tino-04 → tino-05
-      'verify_tik',     // tino-05 → tino-06
-      'educate',        // tino-06 → tino-07
-      'clear_summary',  // tino-07 → END
+      'open_official_source',
+      'check_official_and_prepare',
+      'follow_official_evacuation_guidance',
+      'share_verified_rescue_update',
+      'inspect_provenance',
+      'explain_real_flood_vs_fabricated_visual',
+      'correct_with_official_link',
+      'send_structured_update',
     ];
     for (const d of path) {
       engine.makeDecision(d);
@@ -73,7 +73,7 @@ describe('SimulationEngine', () => {
     const engine = new SimulationEngine(case001);
     expect(engine.getProfile()).toBeNull(); // not completed
 
-    const path = ['verify', 'verify_pagasa', 'verify_first', 'verify_context', 'verify_image', 'verify_tik', 'educate', 'clear_summary'];
+    const path = ['open_official_source', 'check_official_and_prepare', 'follow_official_evacuation_guidance', 'share_verified_rescue_update', 'inspect_provenance', 'explain_real_flood_vs_fabricated_visual', 'correct_with_official_link', 'send_structured_update'];
     for (const d of path) {
       engine.makeDecision(d);
     }
@@ -85,7 +85,39 @@ describe('SimulationEngine', () => {
   it('is not complete until END is reached', () => {
     const engine = new SimulationEngine(case001);
     expect(engine.isComplete()).toBe(false);
-    engine.makeDecision('verify');
+    engine.makeDecision('open_official_source');
     expect(engine.isComplete()).toBe(false);
+  });
+
+  it('assigns the skeptical profile to repeated delayed responses', () => {
+    const engine = new SimulationEngine(case001);
+    const path = [
+      'wait_for_others',
+      'wait_for_more_posts',
+      'wait_for_social_confirmation',
+      'stay_silent_to_avoid_panic',
+      'share_with_doubt',
+      'dismiss_all_flood_updates',
+      'delete_and_say_nothing',
+      'wait_without_summary',
+    ];
+    for (const decision of path) engine.makeDecision(decision);
+    expect(engine.getProfile()?.id).toBe('skeptical');
+  });
+
+  it('assigns the emotional profile to repeated alarmist responses', () => {
+    const engine = new SimulationEngine(case001);
+    const path = [
+      'forward_unchecked',
+      'reshare_without_source',
+      'dismiss_as_hype',
+      'amplify_unconfirmed_rescue_claim',
+      'post_as_proof',
+      'repost_for_awareness',
+      'publicly_shame_sender',
+      'send_alarmist_summary',
+    ];
+    for (const decision of path) engine.makeDecision(decision);
+    expect(engine.getProfile()?.id).toBe('emotional');
   });
 });

@@ -121,34 +121,6 @@ export default async function DebriefPage({
         )}
 
         {/* ── Reflection Profiles ── */}
-        {caseData.reflection && (
-          <section>
-            <h2 className="text-lg font-bold text-storm-text flex items-center gap-2 mb-4">
-              <span className="w-2 h-2 rounded-full bg-storm-glow" />
-              Behavioral Profiles
-            </h2>
-
-            <p className="text-storm-muted text-sm mb-4">
-              Your decisions during the simulation determine which profile fits best.
-              Here are all possible outcomes:
-            </p>
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              {caseData.reflection.profiles.map((profile) => (
-                <div
-                  key={profile.id}
-                  className="rounded-xl border border-storm-dim/20 p-4"
-                >
-                  <h3 className="text-storm-text font-bold text-sm mb-2">{profile.title}</h3>
-                  <p className="text-storm-muted text-xs leading-relaxed">
-                    {profile.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
         {/* Navigation */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 pb-8">
           <Link

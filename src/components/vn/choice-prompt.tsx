@@ -1,29 +1,14 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { VNChoice, Decision } from '@/lib/schema/case.schema';
+import type { Decision } from '@/lib/schema/case.schema';
 
 interface ChoicePromptProps {
-  choices: VNChoice[];
   decisions: Decision[];
   onChoose: (choiceId: string) => void;
 }
 
-const CHOICE_STYLES: Record<string, { label: string; color: string; activeBg: string }> = {
-  share: { label: 'SHARE', color: '#C4863A', activeBg: 'rgba(196,134,58,0.15)' },
-  verify: { label: 'VERIFY', color: '#4A7C5C', activeBg: 'rgba(74,124,92,0.15)' },
-  ignore: { label: 'IGNORE', color: '#8C2E2E', activeBg: 'rgba(140,46,46,0.15)' },
-  act: { label: 'ACT', color: '#4A7C5C', activeBg: 'rgba(74,124,92,0.15)' },
-  dismiss: { label: 'DISMISS', color: '#8C2E2E', activeBg: 'rgba(140,46,46,0.15)' },
-  wait: { label: 'WAIT', color: '#6B6358', activeBg: 'rgba(107,99,88,0.15)' },
-  correct: { label: 'CORRECT', color: '#D49A44', activeBg: 'rgba(212,154,68,0.15)' },
-  educate: { label: 'EDUCATE', color: '#D49A44', activeBg: 'rgba(212,154,68,0.15)' },
-  clear_summary: { label: 'CLEAR', color: '#4A7C5C', activeBg: 'rgba(74,124,92,0.15)' },
-  urgent_summary: { label: 'URGENT', color: '#C4863A', activeBg: 'rgba(196,134,58,0.15)' },
-  brief_summary: { label: 'BRIEF', color: '#6B6358', activeBg: 'rgba(107,99,88,0.15)' },
-};
-
-export function ChoicePrompt({ choices, decisions, onChoose }: ChoicePromptProps) {
+export function ChoicePrompt({ decisions, onChoose }: ChoicePromptProps) {
   const [visible, setVisible] = useState(false);
   const [timers, setTimers] = useState<Record<string, number>>({});
   const intervalsRef = useRef<Record<string, ReturnType<typeof setInterval>>>({});
@@ -36,34 +21,34 @@ export function ChoicePrompt({ choices, decisions, onChoose }: ChoicePromptProps
 
   useEffect(() => {
     const initial: Record<string, number> = {};
-    for (const c of choices) {
-      if (c.timerSeconds) {
-        initial[c.id] = c.timerSeconds;
+    for (const decision of decisions) {
+      if (decision.timerSeconds) {
+        initial[decision.id] = decision.timerSeconds;
       }
     }
     if (Object.keys(initial).length > 0) {
       setTimers(initial);
     }
-  }, [choices]);
+  }, [decisions]);
 
   useEffect(() => {
-    for (const c of choices) {
-      if (c.timerSeconds && timers[c.id] !== undefined) {
+    for (const decision of decisions) {
+      if (decision.timerSeconds && timers[decision.id] !== undefined) {
         const id = setInterval(() => {
           setTimers((prev) => {
-            const current = prev[c.id];
+            const current = prev[decision.id];
             if (current === undefined || current <= 1) {
               clearInterval(id);
               if (!chosenRef.current) {
                 chosenRef.current = true;
-                onChoose(c.id);
+                onChoose(decision.id);
               }
               return prev;
             }
-            return { ...prev, [c.id]: current - 1 };
+            return { ...prev, [decision.id]: current - 1 };
           });
         }, 1000);
-        intervalsRef.current[c.id] = id;
+        intervalsRef.current[decision.id] = id;
       }
     }
 
@@ -73,7 +58,7 @@ export function ChoicePrompt({ choices, decisions, onChoose }: ChoicePromptProps
       }
       intervalsRef.current = {};
     };
-  }, [choices, onChoose]);
+  }, [decisions, onChoose]);
 
   const handleChoose = useCallback(
     (choiceId: string) => {
@@ -84,80 +69,42 @@ export function ChoicePrompt({ choices, decisions, onChoose }: ChoicePromptProps
     [onChoose],
   );
 
-  const decisionMap = useRef<Record<string, Decision>>({});
-  decisionMap.current = {};
-  for (const d of decisions) {
-    decisionMap.current[d.id] = d;
-  }
-
   return (
     <div
-      className={`absolute inset-0 z-40 flex items-center justify-center transition-all duration-500 ${
+      className={`absolute inset-x-0 top-0 z-40 mx-auto w-full max-w-xl px-4 pt-5 sm:px-6 sm:pt-8 transition-all duration-500 ${
         visible ? 'opacity-100' : 'opacity-0'
       }`}
     >
-      {/* Dark backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
-
-      {/* Choice cards */}
-      <div className="relative z-10 w-full max-w-md px-4 sm:px-6 py-8 flex flex-col gap-3 sm:gap-4">
-        {choices.map((choice, index) => {
-          const decision = decisionMap.current[choice.id];
-          const style = CHOICE_STYLES[choice.id] ?? {
-            label: choice.label,
-            color: '#9A9284',
-            activeBg: 'rgba(154,146,132,0.15)',
-          };
-          const timer = choice.timerSeconds ? timers[choice.id] : undefined;
-          const description = decision?.label ?? choice.label;
+      {/* Neutral, separate options stay above the dialogue so the question remains readable. */}
+      <div className="flex flex-col gap-2 sm:gap-3">
+        {decisions.map((decision, index) => {
+          const timer = decision.timerSeconds ? timers[decision.id] : undefined;
 
           return (
             <button
-              key={choice.id}
-              onClick={() => handleChoose(choice.id)}
+              key={decision.id}
+              onClick={() => handleChoose(decision.id)}
               className={`
-                relative group rounded-xl border px-5 py-4 text-left
+                relative rounded-xl border border-storm-text/35 bg-storm-bg/90 px-5 py-3 text-left shadow-lg backdrop-blur-sm
                 transition-all duration-300
-                hover:scale-[1.03] active:scale-[0.97]
+                hover:border-storm-text/70 hover:bg-storm-surface active:scale-[0.98]
                 ${visible ? 'translate-y-0' : 'translate-y-4'}
               `}
-              style={{
-                borderColor: `${style.color}33`,
-                background: `linear-gradient(135deg, ${style.activeBg} 0%, rgba(13,12,10,0.6) 100%)`,
-                transitionDelay: `${index * 80}ms`,
-              }}
+              style={{ transitionDelay: `${index * 80}ms` }}
             >
               {/* Timer ring */}
               {timer !== undefined && (
                 <div
-                  className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-storm-bg border-2 flex items-center justify-center z-10"
-                  style={{ borderColor: style.color }}
+                  className="absolute -top-2 -right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-storm-text bg-storm-bg"
                 >
-                  <span
-                    className="text-sm font-bold animate-countdown-pulse"
-                    style={{ color: style.color }}
-                  >
+                  <span className="animate-countdown-pulse text-sm font-bold text-storm-text">
                     {timer}
                   </span>
                 </div>
               )}
 
-              {/* Card accent bar */}
-              <div
-                className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full"
-                style={{ background: style.color }}
-              />
-
-              <div className="pl-4">
-                <div
-                  className="text-xs font-bold uppercase tracking-widest mb-1"
-                  style={{ color: style.color }}
-                >
-                  {style.label}
-                </div>
-                <div className="text-storm-text text-sm sm:text-base leading-relaxed">
-                  {description}
-                </div>
+              <div className="pr-5 text-storm-text text-sm leading-relaxed sm:text-base">
+                {decision.label}
               </div>
             </button>
           );

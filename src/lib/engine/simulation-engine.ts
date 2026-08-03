@@ -1,4 +1,4 @@
-import type { Case, SimulationNode, DecisionEffects } from '@/lib/schema/case.schema';
+import type { Case, SimulationNode, DecisionEffects, ProfileEffects } from '@/lib/schema/case.schema';
 
 /**
  * Tracks the three meters tracked throughout a simulation.
@@ -18,6 +18,7 @@ export interface DecisionRecord {
   decisionId: string;
   decisionLabel: string;
   effects: DecisionEffects;
+  profileEffects: ProfileEffects;
 }
 
 /**
@@ -100,6 +101,7 @@ export class SimulationEngine {
       decisionId: decision.id,
       decisionLabel: decision.label,
       effects: { ...decision.effects },
+      profileEffects: { ...decision.profileEffects },
     });
 
     // Advance
@@ -123,19 +125,48 @@ export class SimulationEngine {
   }
 
   /**
-   * Return the computed final personality profile based on aggregate effects.
+   * Return the computed final personality profile from each decision's
+   * behavioural signal and its three learning-indicator effects.
    * Called after the case is complete.
    */
   getProfile() {
     if (!this.completed || !this.caseData.reflection) return null;
 
-    const netCommunity = this.history.reduce((sum, r) => sum + (r.effects.communityTrust ?? 0), 0);
-    const netIntegrity = this.history.reduce((sum, r) => sum + (r.effects.informationIntegrity ?? 0), 0);
+    const scores: Record<string, number> = {
+      responsible: 0,
+      skeptical: 0,
+      emotional: 0,
+    };
 
-    let profileId: string;
-    if (netCommunity >= 30 && netIntegrity >= 30) profileId = 'responsible';
-    else if (netIntegrity >= 20) profileId = 'skeptical';
-    else profileId = 'emotional';
+    for (const record of this.history) {
+      scores.responsible += record.profileEffects.responsible;
+      scores.skeptical += record.profileEffects.skeptical;
+      scores.emotional += record.profileEffects.emotional;
+
+      const { communityTrust, informationIntegrity, publicSafety } = record.effects;
+
+      // A balanced positive contribution supports responsible communication.
+      scores.responsible += (
+        Math.max(0, communityTrust) +
+        Math.max(0, informationIntegrity) +
+        Math.max(0, publicSafety)
+      ) / 30;
+
+      // Careful verification paired with dangerous delay is a skeptical pattern.
+      scores.skeptical += (
+        Math.max(0, informationIntegrity) + Math.max(0, -publicSafety)
+      ) / 25;
+
+      // Eroding trust or information quality signals an urgency-driven response.
+      scores.emotional += (
+        Math.max(0, -communityTrust) + Math.max(0, -informationIntegrity)
+      ) / 20;
+    }
+
+    const profileId = Object.entries(scores).reduce(
+      (bestId, [id, score]) => score > scores[bestId] ? id : bestId,
+      'responsible',
+    );
 
     return this.caseData.reflection.profiles.find((p) => p.id === profileId) ?? null;
   }

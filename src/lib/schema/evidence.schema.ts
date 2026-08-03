@@ -14,9 +14,7 @@ export const evidenceExplorerEntrySchema = z.object({
   mediaStatus: z.enum(['authentic', 'synthetic', 'altered', 'miscaptioned', 'not-yet-verifiable']),
   claimAccuracy: z.enum(['accurate', 'false', 'misleading', 'unverified-at-the-time']),
   verificationMethod: z.string().optional(),
-  publisher: z.string().min(1),
-  publishDate: z.string().min(1),
-  citation: sourceRefSchema,
+  citations: z.array(sourceRefSchema).min(1),
   teachingPoint: z.string().optional(),
 });
 export type EvidenceExplorerEntry = z.infer<typeof evidenceExplorerEntrySchema>;
