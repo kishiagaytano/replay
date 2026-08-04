@@ -7,6 +7,15 @@ import type { Case } from '@/lib/schema/case.schema';
  *
  * Based on verified sources S1-S8 from the research pack.
  * Dialog is reconstructed/simulated (labeled per Source Gate rules).
+ *
+ * ─────────────────────────────────────────────────────────────────────────
+ * DRAFT — the `signals` array on each decision is a first pass derived from
+ * that decision's own label, added so the D6 reflection engine has data to
+ * work against. The six values come from Product Definition §12 and are
+ * fixed; which decisions demonstrate which check is CONTENT, and needs review
+ * and sign-off by Gigi (Case Data Architect) and Kish (QA) before demo.
+ * Changing a `signals` array does not require any engine change.
+ * ─────────────────────────────────────────────────────────────────────────
  */
 export const case001: Case = {
   id: 'the-flood-was-real',
@@ -38,6 +47,7 @@ export const case001: Case = {
   nodes: [
     {
       id: 'tino-00',
+      evidenceId: 'E1',
       background: 'bg_black',
       overlay: {
         type: 'notification',
@@ -53,6 +63,7 @@ export const case001: Case = {
           effects: { communityTrust: 8, informationIntegrity: 10, publicSafety: 5 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -2 },
           next: 'tino-01',
+          signals: ['checked-source', 'sought-official-confirmation'],
         },
         {
           id: 'forward_unchecked',
@@ -61,6 +72,7 @@ export const case001: Case = {
           effects: { communityTrust: -4, informationIntegrity: -8, publicSafety: 1 },
           profileEffects: { responsible: -2, skeptical: 0, emotional: 2 },
           next: 'tino-01',
+          signals: [],
         },
         {
           id: 'wait_for_others',
@@ -69,6 +81,7 @@ export const case001: Case = {
           effects: { communityTrust: -2, informationIntegrity: 1, publicSafety: -5 },
           profileEffects: { responsible: -1, skeptical: 3, emotional: -1 },
           next: 'tino-01',
+          signals: [],
         },
       ],
     },
@@ -82,6 +95,7 @@ export const case001: Case = {
     // ════════════════════════════════════════════
     {
       id: 'tino-01',
+      evidenceId: 'E1',
       speaker: 'Lola',
       sprite: 'lola_worried',
       background: 'bg_bedroom_night',
@@ -94,6 +108,7 @@ export const case001: Case = {
           effects: { communityTrust: 12, informationIntegrity: 15, publicSafety: 14 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -2 },
           next: 'tino-02',
+          signals: ['checked-source', 'sought-official-confirmation', 'shared-with-context', 'acted-on-credible-warning'],
         },
         {
           id: 'coordinate_family_needs',
@@ -102,6 +117,7 @@ export const case001: Case = {
           effects: { communityTrust: 10, informationIntegrity: 8, publicSafety: 12 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -1 },
           next: 'tino-02',
+          signals: ['shared-with-context', 'acted-on-credible-warning'],
         },
         {
           id: 'reshare_without_source',
@@ -110,6 +126,7 @@ export const case001: Case = {
           effects: { communityTrust: -4, informationIntegrity: -8, publicSafety: 3 },
           profileEffects: { responsible: -2, skeptical: 0, emotional: 2 },
           next: 'tino-02',
+          signals: [],
         },
         {
           id: 'wait_for_more_posts',
@@ -118,6 +135,7 @@ export const case001: Case = {
           effects: { communityTrust: -3, informationIntegrity: 1, publicSafety: -12 },
           profileEffects: { responsible: -1, skeptical: 3, emotional: -1 },
           next: 'tino-02',
+          signals: [],
         },
       ],
     },
@@ -129,6 +147,7 @@ export const case001: Case = {
     // ════════════════════════════════════════════
     {
       id: 'tino-02',
+      evidenceId: 'E2',
       speaker: 'Maria',
       sprite: 'maria_urgent',
       background: 'bg_bedroom_night',
@@ -141,6 +160,7 @@ export const case001: Case = {
           effects: { communityTrust: 12, informationIntegrity: 10, publicSafety: 16 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -2 },
           next: 'tino-03',
+          signals: ['sought-official-confirmation', 'acted-on-credible-warning'],
         },
         {
           id: 'send_actionable_guidance',
@@ -149,6 +169,7 @@ export const case001: Case = {
           effects: { communityTrust: 10, informationIntegrity: 12, publicSafety: 14 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -1 },
           next: 'tino-03',
+          signals: ['sought-official-confirmation', 'shared-with-context', 'acted-on-credible-warning'],
         },
         {
           id: 'wait_for_social_confirmation',
@@ -157,6 +178,7 @@ export const case001: Case = {
           effects: { communityTrust: -4, informationIntegrity: 1, publicSafety: -15 },
           profileEffects: { responsible: -1, skeptical: 3, emotional: -1 },
           next: 'tino-03',
+          signals: [],
         },
         {
           id: 'dismiss_as_hype',
@@ -165,6 +187,7 @@ export const case001: Case = {
           effects: { communityTrust: -8, informationIntegrity: -8, publicSafety: -17 },
           profileEffects: { responsible: -3, skeptical: -1, emotional: 3 },
           next: 'tino-03',
+          signals: [],
         },
       ],
     },
@@ -176,6 +199,7 @@ export const case001: Case = {
     // ════════════════════════════════════════════
     {
       id: 'tino-03',
+      evidenceId: 'E3',
       speaker: 'Jeff',
       sprite: 'jeff_concerned',
       background: 'bg_street_flood',
@@ -188,6 +212,7 @@ export const case001: Case = {
           effects: { communityTrust: 10, informationIntegrity: 15, publicSafety: 14 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -2 },
           next: 'tino-04',
+          signals: ['checked-source', 'checked-date-location', 'shared-with-context'],
         },
         {
           id: 'check_location_and_add_context',
@@ -196,6 +221,7 @@ export const case001: Case = {
           effects: { communityTrust: 8, informationIntegrity: 16, publicSafety: 11 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -2 },
           next: 'tino-04',
+          signals: ['checked-date-location', 'shared-with-context'],
         },
         {
           id: 'amplify_unconfirmed_rescue_claim',
@@ -204,6 +230,7 @@ export const case001: Case = {
           effects: { communityTrust: -8, informationIntegrity: -12, publicSafety: -5 },
           profileEffects: { responsible: -3, skeptical: -1, emotional: 3 },
           next: 'tino-04',
+          signals: [],
         },
         {
           id: 'stay_silent_to_avoid_panic',
@@ -212,6 +239,7 @@ export const case001: Case = {
           effects: { communityTrust: -4, informationIntegrity: 2, publicSafety: -10 },
           profileEffects: { responsible: -1, skeptical: 3, emotional: -1 },
           next: 'tino-04',
+          signals: [],
         },
       ],
     },
@@ -223,6 +251,7 @@ export const case001: Case = {
     // ════════════════════════════════════════════
     {
       id: 'tino-04',
+      evidenceId: 'E4',
       speaker: 'Maria',
       sprite: 'maria_skeptical',
       background: 'bg_evacuation_center',
@@ -235,6 +264,7 @@ export const case001: Case = {
           effects: { communityTrust: 9, informationIntegrity: 16, publicSafety: 6 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -2 },
           next: 'tino-05',
+          signals: ['checked-source', 'checked-date-location'],
         },
         {
           id: 'label_unverified_and_redirect',
@@ -243,6 +273,7 @@ export const case001: Case = {
           effects: { communityTrust: 12, informationIntegrity: 14, publicSafety: 12 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -2 },
           next: 'tino-05',
+          signals: ['sought-official-confirmation', 'shared-with-context', 'communicated-uncertainty'],
         },
         {
           id: 'share_with_doubt',
@@ -251,6 +282,7 @@ export const case001: Case = {
           effects: { communityTrust: -3, informationIntegrity: -7, publicSafety: -3 },
           profileEffects: { responsible: -2, skeptical: 1, emotional: 1 },
           next: 'tino-05',
+          signals: ['communicated-uncertainty'],
         },
         {
           id: 'post_as_proof',
@@ -259,6 +291,7 @@ export const case001: Case = {
           effects: { communityTrust: -10, informationIntegrity: -15, publicSafety: -8 },
           profileEffects: { responsible: -3, skeptical: -1, emotional: 3 },
           next: 'tino-05',
+          signals: [],
         },
       ],
     },
@@ -270,6 +303,7 @@ export const case001: Case = {
     // ════════════════════════════════════════════
     {
       id: 'tino-05',
+      evidenceId: 'E5',
       speaker: 'Maria',
       sprite: 'maria_urgent',
       background: 'bg_evacuation_center',
@@ -282,6 +316,7 @@ export const case001: Case = {
           effects: { communityTrust: 15, informationIntegrity: 18, publicSafety: 13 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -3 },
           next: 'tino-06',
+          signals: ['sought-official-confirmation', 'shared-with-context', 'communicated-uncertainty'],
         },
         {
           id: 'check_original_and_watermark',
@@ -290,6 +325,7 @@ export const case001: Case = {
           effects: { communityTrust: 10, informationIntegrity: 18, publicSafety: 8 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -2 },
           next: 'tino-06',
+          signals: ['checked-source', 'checked-date-location'],
         },
         {
           id: 'dismiss_all_flood_updates',
@@ -298,6 +334,7 @@ export const case001: Case = {
           effects: { communityTrust: -6, informationIntegrity: -4, publicSafety: -13 },
           profileEffects: { responsible: -2, skeptical: 3, emotional: -1 },
           next: 'tino-06',
+          signals: [],
         },
         {
           id: 'repost_for_awareness',
@@ -306,6 +343,7 @@ export const case001: Case = {
           effects: { communityTrust: -10, informationIntegrity: -15, publicSafety: -6 },
           profileEffects: { responsible: -3, skeptical: -1, emotional: 3 },
           next: 'tino-06',
+          signals: [],
         },
       ],
     },
@@ -317,6 +355,7 @@ export const case001: Case = {
     // ════════════════════════════════════════════
     {
       id: 'tino-06',
+      evidenceId: 'E6',
       speaker: 'Jeff',
       sprite: 'jeff_concerned',
       background: 'bg_classroom',
@@ -329,6 +368,7 @@ export const case001: Case = {
           effects: { communityTrust: 14, informationIntegrity: 15, publicSafety: 12 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -2 },
           next: 'tino-07',
+          signals: ['checked-source', 'sought-official-confirmation', 'shared-with-context'],
         },
         {
           id: 'share_verification_checklist',
@@ -337,6 +377,7 @@ export const case001: Case = {
           effects: { communityTrust: 12, informationIntegrity: 14, publicSafety: 10 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -2 },
           next: 'tino-07',
+          signals: ['sought-official-confirmation', 'shared-with-context'],
         },
         {
           id: 'delete_and_say_nothing',
@@ -345,6 +386,7 @@ export const case001: Case = {
           effects: { communityTrust: -3, informationIntegrity: 2, publicSafety: -5 },
           profileEffects: { responsible: -1, skeptical: 3, emotional: -1 },
           next: 'tino-07',
+          signals: [],
         },
         {
           id: 'publicly_shame_sender',
@@ -353,6 +395,7 @@ export const case001: Case = {
           effects: { communityTrust: -10, informationIntegrity: 3, publicSafety: 0 },
           profileEffects: { responsible: -2, skeptical: 0, emotional: 2 },
           next: 'tino-07',
+          signals: [],
         },
       ],
     },
@@ -380,6 +423,7 @@ export const case001: Case = {
           effects: { communityTrust: 16, informationIntegrity: 18, publicSafety: 16 },
           profileEffects: { responsible: 3, skeptical: -1, emotional: -3 },
           next: 'END',
+          signals: ['checked-source', 'shared-with-context', 'acted-on-credible-warning', 'communicated-uncertainty'],
         },
         {
           id: 'send_safety_first_update',
@@ -388,6 +432,7 @@ export const case001: Case = {
           effects: { communityTrust: 12, informationIntegrity: 11, publicSafety: 17 },
           profileEffects: { responsible: 2, skeptical: 0, emotional: -1 },
           next: 'END',
+          signals: ['sought-official-confirmation', 'shared-with-context', 'acted-on-credible-warning', 'communicated-uncertainty'],
         },
         {
           id: 'wait_without_summary',
@@ -396,6 +441,7 @@ export const case001: Case = {
           effects: { communityTrust: -2, informationIntegrity: 3, publicSafety: -6 },
           profileEffects: { responsible: -1, skeptical: 3, emotional: -1 },
           next: 'END',
+          signals: [],
         },
         {
           id: 'send_alarmist_summary',
@@ -404,6 +450,7 @@ export const case001: Case = {
           effects: { communityTrust: -10, informationIntegrity: -13, publicSafety: -10 },
           profileEffects: { responsible: -3, skeptical: -1, emotional: 3 },
           next: 'END',
+          signals: [],
         },
       ],
     },

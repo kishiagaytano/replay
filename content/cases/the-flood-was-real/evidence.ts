@@ -2,26 +2,31 @@
  * Evidence Explorer entries for Case 001.
  * Each entry maps a player-encountered message to its source, verification status, and teaching point.
  */
+import type { EvidenceItem } from '@/lib/schema/case.schema';
 import type { EvidenceExplorerEntry } from '@/lib/schema/evidence.schema';
+import { buildEvidenceEntries, getEncounteredEvidence } from '@/lib/engine/evidence-index';
+import type { DecisionRecord } from '@/lib/engine/simulation-engine';
 import { case001 } from './case';
 
+const options = {
+  verificationMethodFor: (item: EvidenceItem) => getVerificationMethod(item.mediaStatus),
+  teachingPointFor: (item: EvidenceItem) => getTeachingPoint(item.id),
+};
+
 /**
- * Build evidence explorer entries from the case's evidence items.
- * In the MVP, we derive these directly from the case data.
- * Future: allow richer per-player-path entries.
+ * All evidence for the case, ordered by the node where the player meets it.
+ * `playerEncountered` is the actual node text the player saw, resolved through
+ * the node ⇄ evidence links in the case content — not a truncated claim.
  */
 export function getEvidenceExplorerEntries(): EvidenceExplorerEntry[] {
-  return case001.evidence.map((ev) => ({
-    evidenceId: ev.id,
-    nodeId: ev.id, // Simplified: mapping evidence to the node it appears in
-    playerEncountered: ev.claim.substring(0, 80) + '...',
-    claim: ev.claim,
-    mediaStatus: ev.mediaStatus,
-    claimAccuracy: ev.claimAccuracy,
-    verificationMethod: getVerificationMethod(ev.mediaStatus),
-    citations: ev.citations,
-    teachingPoint: getTeachingPoint(ev.id),
-  }));
+  return buildEvidenceEntries(case001, options);
+}
+
+/** Only the evidence reached on a specific run. */
+export function getEncounteredEvidenceEntries(
+  history: ReadonlyArray<Pick<DecisionRecord, 'nodeId'>>,
+): EvidenceExplorerEntry[] {
+  return getEncounteredEvidence(case001, history, options);
 }
 
 function getVerificationMethod(mediaStatus: string): string | undefined {
@@ -29,7 +34,7 @@ function getVerificationMethod(mediaStatus: string): string | undefined {
     case 'authentic':
       return 'Confirmed by official sources / news reporting';
     case 'synthetic':
-      return 'AI detection markers (watermark, disclosure check) + fact-check investigation';
+      return 'Provenance and disclosure checks by a fact-checking organisation (an AI-detection score alone is not proof)';
     case 'altered':
       return 'Reverse image search + source verification';
     case 'miscaptioned':

@@ -26,6 +26,25 @@ export const profileEffectsSchema = z.object({
 });
 export type ProfileEffects = z.infer<typeof profileEffectsSchema>;
 
+// ── Learning Signals ──
+/**
+ * The six checks the reflection evaluates, lifted verbatim from
+ * Product Definition §12. Do not add or rename a value without a signed-off
+ * revision of the Product Definition — the reflection copy and the scope
+ * contract both depend on this list.
+ */
+export const learningSignalSchema = z.enum([
+  'checked-source',
+  'checked-date-location',
+  'sought-official-confirmation',
+  'shared-with-context',
+  'acted-on-credible-warning',
+  'communicated-uncertainty',
+]);
+export type LearningSignal = z.infer<typeof learningSignalSchema>;
+
+export const LEARNING_SIGNALS = learningSignalSchema.options;
+
 // ── Decision ──
 export const decisionSchema = z.object({
   id: z.string().min(1),
@@ -33,6 +52,8 @@ export const decisionSchema = z.object({
   timerSeconds: z.number().int().positive().optional(),
   effects: decisionEffectsSchema,
   profileEffects: profileEffectsSchema,
+  /** Which of the six §12 checks this option demonstrates. */
+  signals: z.array(learningSignalSchema).default([]),
   next: z.string(), // node id or "END"
   evidenceId: z.string().optional(),
 });
@@ -61,6 +82,8 @@ export const simulationNodeSchema = z.object({
     text: z.string(),
     sender: z.string().optional(),
   })).optional(),
+  /** The evidence item this node's information artifact maps to (§13). */
+  evidenceId: z.string().optional(),
   decisions: z.array(decisionSchema).min(1, 'Each node must have at least one decision'),
 });
 export type SimulationNode = z.infer<typeof simulationNodeSchema>;

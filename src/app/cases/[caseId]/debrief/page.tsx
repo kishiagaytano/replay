@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getCase } from '@/lib/registry';
+import { RunSummarySection } from '@/components/debrief/run-summary';
 
 /**
  * Debrief hub — shows Historical Context, Community Toolkit, and Reflection.
@@ -120,7 +121,15 @@ export default async function DebriefPage({
           </section>
         )}
 
-        {/* ── Reflection Profiles ── */}
+        {/* ── Reflection / Information Profile ── */}
+        <section>
+          <h2 className="text-lg font-bold text-storm-text flex items-center gap-2 mb-4">
+            <span className="w-2 h-2 rounded-full bg-storm-accent" />
+            Reflection
+          </h2>
+          <RunSummarySection caseData={caseData} />
+        </section>
+
         {/* Navigation */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 pb-8">
           <Link

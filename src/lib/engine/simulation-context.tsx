@@ -6,13 +6,22 @@ import {
   useReducer,
   useCallback,
   useMemo,
-  useEffect,
   useRef,
   type ReactNode,
 } from 'react';
-import { SimulationEngine, type SimulationState, type DecisionRecord } from './simulation-engine';
-import { saveSimulation, loadSimulation, clearSimulation } from './persistence';
-import type { Case, SimulationNode } from '@/lib/schema/case.schema';
+import {
+  SimulationEngine,
+  type SimulationState,
+  type DecisionRecord,
+  type RunSummary,
+} from './simulation-engine';
+import {
+  saveSimulation,
+  loadSimulation,
+  clearSimulation,
+  computeCaseRevision,
+} from './persistence';
+import type { Case, SimulationNode, BehavioralProfile } from '@/lib/schema/case.schema';
 
 // ── State ──
 
@@ -22,64 +31,58 @@ interface SimulationContextState {
   meters: SimulationState;
   history: DecisionRecord[];
   completed: boolean;
-  profile: { id: string; title: string; description: string } | null;
+  profile: BehavioralProfile | null;
+  /** Full debrief payload. Null until the engine is initialised. */
+  runSummary: RunSummary | null;
   phase: 'loading' | 'playing' | 'completed';
   caseId: string | null;
   caseTitle: string | null;
+  caseRevision: string | null;
   decisionIds: string[]; // For persistence replay
 }
 
 type Action =
   | { type: 'INIT'; payload: Case }
-  | { type: 'DECISION_MADE'; payload: SimulationNode | null; state: SimulationState; history: DecisionRecord[]; completed: boolean; decisionIds: string[] }
+  | { type: 'SYNC'; engine: SimulationEngine; decisionIds: string[] }
   | { type: 'RESTORE'; payload: { engine: SimulationEngine; caseData: Case; decisionIds: string[] } }
   | { type: 'RESET' };
+
+/** Derive the renderable slice of state from the engine. Single source of truth. */
+function snapshot(
+  engine: SimulationEngine,
+  caseData: Case,
+  decisionIds: string[],
+): SimulationContextState {
+  const runSummary = engine.getRunSummary();
+  return {
+    engine,
+    currentNode: engine.getCurrentNode(),
+    meters: runSummary.meters,
+    history: runSummary.decisions,
+    completed: runSummary.completed,
+    profile: runSummary.profile,
+    runSummary,
+    phase: runSummary.completed ? 'completed' : 'playing',
+    caseId: caseData.id,
+    caseTitle: caseData.title,
+    caseRevision: computeCaseRevision(caseData),
+    decisionIds,
+  };
+}
 
 function reducer(state: SimulationContextState, action: Action): SimulationContextState {
   switch (action.type) {
     case 'INIT': {
       const engine = new SimulationEngine(action.payload);
-      return {
-        engine,
-        currentNode: engine.getCurrentNode(),
-        meters: engine.getState(),
-        history: engine.getHistory(),
-        completed: engine.isComplete(),
-        profile: null,
-        phase: 'playing',
-        caseId: action.payload.id,
-        caseTitle: action.payload.title,
-        decisionIds: [],
-      };
+      return snapshot(engine, action.payload, []);
     }
     case 'RESTORE': {
-      const { engine, caseData } = action.payload;
-      return {
-        engine,
-        currentNode: engine.getCurrentNode(),
-        meters: engine.getState(),
-        history: engine.getHistory(),
-        completed: engine.isComplete(),
-        profile: engine.isComplete() ? engine.getProfile() : null,
-        phase: engine.isComplete() ? 'completed' : 'playing',
-        caseId: caseData.id,
-        caseTitle: caseData.title,
-        decisionIds: action.payload.decisionIds,
-      };
+      const { engine, caseData, decisionIds } = action.payload;
+      return snapshot(engine, caseData, decisionIds);
     }
-    case 'DECISION_MADE': {
+    case 'SYNC': {
       if (!state.engine) return state;
-      const profile = action.completed ? state.engine.getProfile() : null;
-      return {
-        ...state,
-        currentNode: action.payload,
-        meters: action.state,
-        history: action.history,
-        completed: action.completed,
-        profile,
-        phase: action.completed ? 'completed' : 'playing',
-        decisionIds: action.decisionIds,
-      };
+      return snapshot(action.engine, action.engine.getCaseInfo(), action.decisionIds);
     }
     case 'RESET': {
       return { ...initialState };
@@ -96,9 +99,11 @@ const initialState: SimulationContextState = {
   history: [],
   completed: false,
   profile: null,
+  runSummary: null,
   phase: 'loading',
   caseId: null,
   caseTitle: null,
+  caseRevision: null,
   decisionIds: [],
 };
 
@@ -121,15 +126,15 @@ const SimulationContext = createContext<SimulationContextState & SimulationActio
 
 export function SimulationProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-
-  // On mount, check for saved state passed via the init wrapper
-  const pendingRestore = useRef<{ caseData: Case; decisionIds: string[] } | null>(null);
+  const caseRef = useRef<Case | null>(null);
 
   const init = useCallback((caseData: Case) => {
-    // Check for saved state
-    const saved = loadSimulation(caseData.id);
+    caseRef.current = caseData;
+    const revision = computeCaseRevision(caseData);
+
+    // A save is only replayed if it matches this exact decision graph.
+    const saved = loadSimulation(caseData.id, revision);
     if (saved && saved.decisionIds.length > 0) {
-      // Restore by replaying decisions
       try {
         const engine = new SimulationEngine(caseData);
         for (const decisionId of saved.decisionIds) {
@@ -141,49 +146,40 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
         });
         return;
       } catch {
-        // If replay fails, start fresh
+        // If replay fails for any reason, start fresh rather than half-restored.
         clearSimulation(caseData.id);
       }
     }
-    // Fresh start
     dispatch({ type: 'INIT', payload: caseData });
   }, []);
 
   const makeDecision = useCallback(
     (decisionId: string) => {
-      if (!state.engine || state.completed) return;
+      const engine = state.engine;
+      if (!engine || state.completed) return;
       try {
-        const nextNode = state.engine.makeDecision(decisionId);
+        engine.makeDecision(decisionId);
         const newDecisionIds = [...state.decisionIds, decisionId];
-        const newHistory = state.engine.getHistory();
-        const completed = state.engine.isComplete();
 
-        // Persist
-        if (state.caseId) {
-          saveSimulation(state.caseId, newDecisionIds);
-          if (completed) {
-            // Keep saved state so debrief pages are accessible on refresh
-          }
+        if (state.caseId && state.caseRevision) {
+          saveSimulation(state.caseId, state.caseRevision, newDecisionIds);
         }
 
-        dispatch({
-          type: 'DECISION_MADE',
-          payload: nextNode,
-          state: state.engine.getState(),
-          history: newHistory,
-          completed,
-          decisionIds: newDecisionIds,
-        });
+        dispatch({ type: 'SYNC', engine, decisionIds: newDecisionIds });
       } catch (e) {
         console.error('Decision failed:', e);
       }
     },
-    [state.engine, state.completed, state.decisionIds, state.caseId],
+    [state.engine, state.completed, state.decisionIds, state.caseId, state.caseRevision],
   );
 
   const reset = useCallback(() => {
     if (state.caseId) {
       clearSimulation(state.caseId);
+    }
+    if (caseRef.current) {
+      dispatch({ type: 'INIT', payload: caseRef.current });
+      return;
     }
     dispatch({ type: 'RESET' });
   }, [state.caseId]);
