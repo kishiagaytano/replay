@@ -560,6 +560,145 @@ export const case001: Case = {
     },
   ],
 
+
+  // ── Historical Reveal (§8 step 6) ──
+  // Every beat is drawn from the sources already registered in §18 of the
+  // Product Definition. No new claim, quotation, time, or figure is introduced
+  // here. `date` is what was knowable at the moment; `confirmedLater` carries
+  // verification that only existed afterwards (§9 knowable-vs-later rule).
+  historicalReveal: {
+    title: 'What actually happened',
+    intro:
+      'Your decisions changed how information moved through your family group. They did not change the typhoon. ' +
+      'Here is the documented timeline, with the sources that establish it.',
+    beats: [
+      {
+        nodeId: 'tino-01',
+        date: 'November 3, 2025',
+        headline: 'Cebu was placed on Red Alert',
+        whatHappened:
+          'Officials raised Red Alert status over Cebu. Classes were suspended, preemptive evacuation was carried out, and sea travel was restricted while Cebu City stepped up disaster preparedness.',
+        citations: [
+          {
+            publisher: 'Philippine Information Agency',
+            title: 'Red alert status raised over Cebu',
+            date: '2025-11-03',
+            url: 'https://pia.gov.ph/news/red-alert-status-raised-over-cebu-evacuation-sea-travel-ban-continue-as-tino-nears/',
+          },
+          {
+            publisher: 'Philippine Information Agency',
+            title: 'Cebu City ramps up disaster preparedness ahead of Typhoon Tino',
+            date: '2025-11-03',
+            url: 'https://pia.gov.ph/news/cebu-city-ramps-up-disaster-preparedness-ahead-of-typhoon-tino/',
+          },
+        ],
+      },
+      {
+        nodeId: 'tino-02',
+        date: 'November 4, 2025',
+        headline: 'Officials warned of life-threatening conditions',
+        whatHappened:
+          'As Tino approached Cebu, the PAGASA bulletin cited in the DSWD DROMIC report described life-threatening conditions and urged protective action. PAGASA remains the authority for the storm chronology.',
+        citations: [
+          {
+            publisher: 'Department of Social Welfare and Development',
+            title: 'DROMIC Report #2 (as of 04 November 2025, 6:00 AM)',
+            date: '2025-11-04',
+            url: 'https://dromic.dswd.gov.ph/wp-content/uploads/2025/11/DSWD-DROMIC-Report-2-on-the-Effects-of-Typhoon-Tino-as-of-04-November-2025-6AM.pdf',
+          },
+          {
+            publisher: 'DOST-PAGASA',
+            title: 'Tropical Cyclone Preliminary Report: Typhoon Tino / Kalmaegi',
+            date: '2026-01-14',
+            url: 'https://pubfiles.pagasa.dost.gov.ph/pagasaweb/files/tamss/weather/tcprelimsummary/PAGASA_Prelim_2025_TINO_rev1.pdf',
+          },
+        ],
+      },
+      {
+        nodeId: 'tino-03',
+        date: 'November 5, 2025',
+        headline: 'The flooding was real',
+        whatHappened:
+          'Flash floods trapped residents across Cebu and rescue operations were launched. This part of what circulated was authentic, and it was accurate.',
+        citations: [
+          {
+            publisher: 'Philippine Information Agency',
+            title: 'Cebu launches rescue operations as flash floods trap residents',
+            date: '2025-11-05',
+            url: 'https://pia.gov.ph/news/cebu-launches-rescue-ops-as-flash-floods-trap-residents-during-tino-onset/',
+          },
+        ],
+      },
+      {
+        nodeId: 'tino-04',
+        date: 'Circulating during the storm',
+        headline: 'An AI-generated image was shared as proof of destruction',
+        whatHappened:
+          'An image presented as homes destroyed by Tino was not a photograph of the typhoon. Fact-checkers traced its provenance and disclosure trail and found it was AI-generated.',
+        confirmedLater:
+          'AFP Fact Check published its debunk on November 7, 2025 — after the moment you had to decide. At the time, provenance and disclosure checks were what was available to you.',
+        citations: [
+          {
+            publisher: 'AFP Fact Check',
+            title: 'AI image falsely presented as Typhoon Kalmaegi destruction',
+            date: '2025-11-07',
+            url: 'https://factcheck.afp.com/doc.afp.com.838C6T3',
+          },
+        ],
+      },
+      {
+        nodeId: 'tino-05',
+        date: 'First posted November 6, 2025',
+        headline: '"Cebu is drowning" was a fabricated visual of a real flood',
+        whatHappened:
+          'The viral "Cebu is drowning" image was AI-generated and carried a visible Gemini mark, shared without disclosure. The flooding it referred to was genuinely happening — the picture was not a picture of it.',
+        confirmedLater:
+          'VERA Files published its debunk on November 11, 2025, after the reconstruction window closed.',
+        citations: [
+          {
+            publisher: 'VERA Files',
+            title: '"Cebu is drowning" image was AI-generated',
+            date: '2025-11-11',
+            url: 'https://verafiles.org/articles/fact-check-circulating-photo-of-cebu-is-drowning-ai-generated',
+          },
+        ],
+      },
+      {
+        nodeId: 'tino-06',
+        date: 'November 7, 2025',
+        headline: 'OCD-7 warned the public about AI-generated typhoon photos',
+        whatHappened:
+          'The Office of Civil Defense Region 7 warned that AI-generated typhoon images were circulating, and urged the public to verify content and rely on authorized sources such as PAGASA.',
+        citations: [
+          {
+            publisher: 'Philippine Information Agency (reporting OCD Region 7)',
+            title: 'OCD-7 warns of AI-generated typhoon photos circulating online',
+            date: '2025-11-07',
+            url: 'https://pia.gov.ph/news/ocd-7-warns-of-ai-generated-typhoon-photos-circling-online/',
+          },
+        ],
+      },
+      {
+        nodeId: 'tino-07',
+        date: 'Not a historical event',
+        headline: 'Your final family update was a learning exercise',
+        simulated: true,
+        whatHappened:
+          'No real person sent the update you composed. That moment is a reconstructed exercise built on the official guidance below, included so you could practise separating what is confirmed, what is false, and what is still uncertain.',
+        citations: [
+          {
+            publisher: 'Philippine Information Agency (reporting OCD Region 7)',
+            title: 'OCD-7 warns of AI-generated typhoon photos circulating online',
+            date: '2025-11-07',
+            url: 'https://pia.gov.ph/news/ocd-7-warns-of-ai-generated-typhoon-photos-circling-online/',
+          },
+        ],
+      },
+    ],
+    closing:
+      'The flood was real. Some of the images were not. Both things were true at the same time, and telling them apart is the skill this case was built to practise.',
+  },
+
   // ── Reflection / Behavioral Profiles ──
   reflection: {
     profiles: [

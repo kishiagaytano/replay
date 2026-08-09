@@ -29,6 +29,15 @@ interface BgDef {
   gradient: string;
 }
 
+/** Meaningful alt text — the backgrounds carry scene information. */
+const BG_ALT: Record<string, string> = {
+  bg_black: '',
+  bg_bedroom_night: 'A dim bedroom at night during the storm',
+  bg_street_flood: 'A flooded street in Cebu',
+  bg_evacuation_center: 'An evacuation centre interior',
+  bg_classroom: 'An empty classroom',
+};
+
 const BG_MAP: Record<string, BgDef> = {
   bg_black: {
     gradient: 'bg-storm-bg',
@@ -50,9 +59,11 @@ const BG_MAP: Record<string, BgDef> = {
 interface BackgroundProps {
   backgroundId?: string;
   children?: React.ReactNode;
+  /** Eager-load only the first scene; later scenes stream in as reached. */
+  priority?: boolean;
 }
 
-export function Background({ backgroundId, children }: BackgroundProps) {
+export function Background({ backgroundId, children, priority = false }: BackgroundProps) {
   const config = backgroundId ? BG_MAP[backgroundId] : undefined;
   const pngPath = backgroundId ? PIXEL_BGS[backgroundId] : undefined;
   const gradientClass = config?.gradient ?? 'bg-storm-bg';
@@ -63,10 +74,15 @@ export function Background({ backgroundId, children }: BackgroundProps) {
       {pngPath && (
         <Image
           src={pngPath}
-          alt="Background"
+          alt={(backgroundId && BG_ALT[backgroundId]) || ''}
+          aria-hidden={!(backgroundId && BG_ALT[backgroundId])}
           fill
+          sizes="100vw"
           className="object-cover image-pixel"
-          priority
+          // Only the opening scene is eager; the rest load as the player
+          // reaches them, which matters on a phone over mobile data.
+          priority={priority}
+          loading={priority ? undefined : 'lazy'}
           unoptimized
         />
       )}

@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getCase } from '@/lib/registry';
 import { RunSummarySection } from '@/components/debrief/run-summary';
+import { LoopProgress } from '@/components/loop/loop-nav';
 
 /**
  * Debrief hub — shows Historical Context, Community Toolkit, and Reflection.
@@ -21,16 +22,19 @@ export default async function DebriefPage({
     <div className="min-h-screen bg-storm-bg">
       {/* Header */}
       <header className="sticky top-0 z-10 border-b border-storm-dim/20 bg-storm-bg/90 backdrop-blur-sm">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href={`/cases/${caseId}`}
-            className="text-storm-muted hover:text-storm-text text-sm transition-colors"
-          >
-            &larr; Back to simulation
-          </Link>
-          <span className="text-storm-accent text-xs font-bold uppercase tracking-wider">
-            Debrief
-          </span>
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          <div className="mb-3 flex items-center justify-between">
+            <Link
+              href={`/cases/${caseId}/evidence`}
+              className="text-storm-muted hover:text-storm-text text-sm transition-colors"
+            >
+              &larr; Back to evidence
+            </Link>
+            <span className="text-storm-accent text-xs font-bold uppercase tracking-wider">
+              Debrief
+            </span>
+          </div>
+          <LoopProgress current="debrief" caseId={caseId} />
         </div>
       </header>
 

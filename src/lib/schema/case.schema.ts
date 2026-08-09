@@ -131,6 +131,38 @@ export const reflectionConfigSchema = z.object({
 });
 export type ReflectionConfig = z.infer<typeof reflectionConfigSchema>;
 
+// ── Historical Reveal (§8 step 6, §15 "one documented historical reveal") ──
+/**
+ * One documented moment in the real timeline, paired with the decision moment
+ * the player faced. §11 locks a single historical timeline: the reveal is where
+ * the player's branching path collapses back into what actually happened.
+ *
+ * `date` is what was knowable at that moment. `confirmedLater` carries the
+ * verification that only became available afterwards — §9's knowable-vs-later
+ * rule forbids presenting a later fact-check as knowledge the player already had.
+ */
+export const revealBeatSchema = z.object({
+  /** The decision moment this corresponds to. */
+  nodeId: z.string().min(1).optional(),
+  date: z.string().min(1, 'A reveal beat must state when it was knowable'),
+  headline: z.string().min(1),
+  whatHappened: z.string().min(1),
+  /** Verification that arrived after the reconstruction window. */
+  confirmedLater: z.string().optional(),
+  /** True only for reconstructed learning exercises, which must be labeled (§9). */
+  simulated: z.boolean().optional(),
+  citations: z.array(sourceRefSchema).min(1, 'Every reveal beat must cite a source'),
+});
+export type RevealBeat = z.infer<typeof revealBeatSchema>;
+
+export const historicalRevealSchema = z.object({
+  title: z.string().min(1),
+  intro: z.string().min(1),
+  beats: z.array(revealBeatSchema).min(1, 'The reveal must contain at least one beat'),
+  closing: z.string().optional(),
+});
+export type HistoricalReveal = z.infer<typeof historicalRevealSchema>;
+
 // ── Toolkit Resource ──
 export const toolkitResourceSchema = z.object({
   title: z.string().min(1),
@@ -152,6 +184,7 @@ export const caseSchema = z.object({
   nodes: z.array(simulationNodeSchema).min(1, 'At least one node is required'),
   entryNodeId: z.string().min(1),
   evidence: z.array(evidenceItemSchema).min(1, 'At least one evidence item is required'),
+  historicalReveal: historicalRevealSchema.optional(),
   toolkit: z.array(toolkitResourceSchema).optional().default([]),
   reflection: reflectionConfigSchema.optional(),
 });

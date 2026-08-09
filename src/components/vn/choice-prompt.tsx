@@ -71,7 +71,8 @@ export function ChoicePrompt({ decisions, onChoose }: ChoicePromptProps) {
 
   return (
     <div
-      className={`absolute inset-x-0 top-0 z-40 mx-auto w-full max-w-xl px-4 pt-5 sm:px-6 sm:pt-8 transition-all duration-500 ${
+      // pt leaves room for the live meter HUD pinned above.
+      className={`absolute inset-x-0 top-0 z-40 mx-auto w-full max-w-xl px-4 pt-24 sm:px-6 sm:pt-28 transition-all duration-500 ${
         visible ? 'opacity-100' : 'opacity-0'
       }`}
     >

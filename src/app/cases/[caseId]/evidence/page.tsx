@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getCase } from '@/lib/registry';
+import { getEvidenceExplorerEntries } from '../../../../../content/cases/the-flood-was-real/evidence';
+import { LoopProgress, ContinueButton } from '@/components/loop/loop-nav';
 
 /**
  * Evidence Explorer page.
@@ -18,20 +20,27 @@ export default async function EvidencePage({
 
   if (!caseData) notFound();
 
+  // Entries come from the D6 evidence index, so each item is tied to the node
+  // where the player met it and carries the text they actually saw (§13).
+  const entries = getEvidenceExplorerEntries();
+
   return (
     <div className="min-h-screen bg-storm-bg">
       {/* Header */}
       <header className="sticky top-0 z-10 border-b border-storm-dim/20 bg-storm-bg/90 backdrop-blur-sm">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href={`/cases/${caseId}`}
-            className="text-storm-muted hover:text-storm-text text-sm transition-colors"
-          >
-            &larr; Back to simulation
-          </Link>
-          <span className="text-storm-accent text-xs font-bold uppercase tracking-wider">
-            Evidence Explorer
-          </span>
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          <div className="mb-3 flex items-center justify-between">
+            <Link
+              href={`/cases/${caseId}/reveal`}
+              className="text-storm-muted hover:text-storm-text text-sm transition-colors"
+            >
+              &larr; Back to the reveal
+            </Link>
+            <span className="text-storm-accent text-xs font-bold uppercase tracking-wider">
+              Evidence Explorer
+            </span>
+          </div>
+          <LoopProgress current="evidence" caseId={caseId} />
         </div>
       </header>
 
@@ -40,7 +49,7 @@ export default async function EvidencePage({
         <div>
           <h1 className="text-xl font-bold text-storm-text">{caseData.title}</h1>
           <p className="text-storm-muted text-sm mt-1">
-            {caseData.evidence.length} evidence item{caseData.evidence.length !== 1 ? 's' : ''} &middot; Tap to expand
+            {entries.length} evidence item{entries.length !== 1 ? 's' : ''} &middot; Tap to expand
           </p>
         </div>
 
@@ -48,9 +57,9 @@ export default async function EvidencePage({
 
         {/* Evidence list */}
         <div className="space-y-4">
-          {caseData.evidence.map((item) => (
+          {entries.map((item) => (
             <details
-              key={item.id}
+              key={item.evidenceId}
               className="group rounded-xl border border-storm-dim/20 overflow-hidden transition-colors hover:border-storm-dim/40"
             >
               <summary className="p-4 cursor-pointer list-none flex items-start gap-3">
@@ -61,7 +70,7 @@ export default async function EvidencePage({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <ChannelTag channel={item.channel} />
-                    <span className="text-storm-dim text-xs">{item.id}</span>
+                    <span className="text-storm-dim text-xs">{item.evidenceId}</span>
                   </div>
                   <p className="text-storm-text text-sm leading-relaxed line-clamp-2">
                     {item.claim}
@@ -83,6 +92,16 @@ export default async function EvidencePage({
               <div className="px-4 pb-4 space-y-3 animate-slide-up">
                 <div className="gradient-divider" />
 
+                {/* What the player actually saw at this moment */}
+                <div>
+                  <div className="text-storm-dim text-xs uppercase tracking-wider mb-1">
+                    What you encountered
+                  </div>
+                  <p className="text-storm-muted text-sm leading-relaxed rounded-lg bg-storm-surface p-3">
+                    {item.playerEncountered}
+                  </p>
+                </div>
+
                 {/* Media status + claim accuracy */}
                 <div className="grid grid-cols-2 gap-3">
                   <DetailBox
@@ -96,6 +115,15 @@ export default async function EvidencePage({
                     color={getAccuracyColor(item.claimAccuracy)}
                   />
                 </div>
+
+                {item.verificationMethod && (
+                  <div>
+                    <div className="text-storm-dim text-xs uppercase tracking-wider mb-1">
+                      How it was verified
+                    </div>
+                    <p className="text-storm-muted text-sm leading-relaxed">{item.verificationMethod}</p>
+                  </div>
+                )}
 
                 {/* Sources */}
                 <div className="space-y-2">
@@ -127,6 +155,12 @@ export default async function EvidencePage({
                   ))}
                 </div>
 
+                {item.teachingPoint && (
+                  <p className="text-storm-text text-xs leading-relaxed border-l-2 border-storm-accent pl-3">
+                    {item.teachingPoint}
+                  </p>
+                )}
+
                 {/* Note */}
                 {item.note && (
                   <p className="text-storm-dim text-xs italic">{item.note}</p>
@@ -136,14 +170,9 @@ export default async function EvidencePage({
           ))}
         </div>
 
-        {/* Back link */}
-        <div className="text-center pt-4">
-          <Link
-            href={`/cases/${caseId}`}
-            className="inline-flex items-center gap-1 text-storm-muted hover:text-storm-text text-sm transition-colors"
-          >
-            &larr; Return to simulation
-          </Link>
+        {/* Continue the loop */}
+        <div className="flex flex-col items-center gap-3 pt-4 pb-4 sm:flex-row sm:justify-center">
+          <ContinueButton current="evidence" caseId={caseId} />
         </div>
       </main>
     </div>

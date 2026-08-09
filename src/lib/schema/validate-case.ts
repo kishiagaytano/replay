@@ -29,7 +29,12 @@ export type CaseIssueCode =
   | 'DECISION_COUNT'
   | 'PROFILE_MISMATCH'
   | 'MISSING_REFLECTION'
-  | 'UNTAGGED_NODE';
+  | 'UNTAGGED_NODE'
+  // historical reveal
+  | 'MISSING_REVEAL'
+  | 'UNKNOWN_REVEAL_NODE'
+  | 'NODE_WITHOUT_REVEAL'
+  | 'UNLABELED_SIMULATED_BEAT';
 
 export interface CaseValidationIssue {
   level: 'error' | 'warning';
@@ -255,6 +260,55 @@ export function validateCase(data: unknown): CaseValidationResult {
           level: 'error',
           code: 'PROFILE_MISMATCH',
           message: `Reflection is missing the "${required}" profile, which the scorer can return.`,
+        });
+      }
+    }
+  }
+
+  // The historical reveal is a required MVP element (§8 step 6, §15).
+  if (!caseData.historicalReveal) {
+    issues.push({
+      level: 'error',
+      code: 'MISSING_REVEAL',
+      message: 'The case has no historicalReveal, so the player\'s path never collapses into the documented timeline (§8 step 6, §15).',
+    });
+  } else {
+    const revealed = new Set<string>();
+
+    for (const beat of caseData.historicalReveal.beats) {
+      if (beat.nodeId) {
+        revealed.add(beat.nodeId);
+        if (!nodeIds.has(beat.nodeId)) {
+          issues.push({
+            level: 'error',
+            code: 'UNKNOWN_REVEAL_NODE',
+            message: `Reveal beat "${beat.headline}" references node "${beat.nodeId}", which does not exist.`,
+            nodeId: beat.nodeId,
+          });
+        }
+      }
+
+      // §9: a reconstructed exercise must never read as something a real
+      // person did. Requiring the label in the copy keeps that guarantee
+      // even if a future UI stops rendering the `simulated` flag.
+      if (beat.simulated && !/simulat|reconstruct|exercise/i.test(beat.whatHappened + beat.headline)) {
+        issues.push({
+          level: 'error',
+          code: 'UNLABELED_SIMULATED_BEAT',
+          message: `Reveal beat "${beat.headline}" is marked simulated but its text does not say so (§9 requires the label).`,
+        });
+      }
+    }
+
+    // Every decision moment the player lived through should have a counterpart
+    // in the reveal, or the collapse into the real timeline has a hole in it.
+    for (const node of caseData.nodes) {
+      if (node.id !== caseData.entryNodeId && !revealed.has(node.id)) {
+        issues.push({
+          level: 'warning',
+          code: 'NODE_WITHOUT_REVEAL',
+          message: `Node "${node.id}" has no matching reveal beat, so the player never learns what actually happened at that moment.`,
+          nodeId: node.id,
         });
       }
     }

@@ -10,7 +10,11 @@ export const evidenceExplorerEntrySchema = z.object({
   evidenceId: z.string().min(1),
   nodeId: z.string().min(1),
   playerEncountered: z.string().min(1), // What the player saw
+  /** Channel the item arrived through — carried over so the Explorer can label it. */
+  channel: z.enum(['messenger', 'facebook', 'tiktok', 'official-advisory', 'notification']),
   claim: z.string().min(1),
+  /** Provenance / caveat note from the authored evidence item. */
+  note: z.string().optional(),
   mediaStatus: z.enum(['authentic', 'synthetic', 'altered', 'miscaptioned', 'not-yet-verifiable']),
   claimAccuracy: z.enum(['accurate', 'false', 'misleading', 'unverified-at-the-time']),
   verificationMethod: z.string().optional(),

@@ -72,7 +72,9 @@ export function buildEvidenceEntries(
         nodeId: nodeId ?? item.id,
         playerEncountered:
           (nodeId ? encounterTextFor(caseData, nodeId) : undefined) ?? item.claim,
+        channel: item.channel,
         claim: item.claim,
+        note: item.note,
         mediaStatus: item.mediaStatus,
         claimAccuracy: item.claimAccuracy,
         verificationMethod: options.verificationMethodFor?.(item),

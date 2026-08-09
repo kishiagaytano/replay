@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import Link from 'next/link';
 import { useSimulation } from '@/lib/engine/simulation-context';
 import { Background } from './background';
 import { CharacterSprite } from './character-sprite';
 import { TextBox } from './text-box';
 import { DeviceOverlay } from './device-overlay';
 import { ChoicePrompt } from './choice-prompt';
+import { MeterHUD } from './meter-hud';
+import { LoopProgress, ContinueButton } from '@/components/loop/loop-nav';
 import type { SimulationState } from '@/lib/engine/simulation-engine';
 
 type StagePhase = 'overlay' | 'typing' | 'choices' | 'transitioning';
@@ -17,7 +18,8 @@ type StagePhase = 'overlay' | 'typing' | 'choices' | 'transitioning';
  * Orchestrates the scene flow: Overlay → Typing → Choices → Transition.
  */
 export function VNStage() {
-  const { currentNode, makeDecision, completed, profile, meters, reset, init, phase, caseId } = useSimulation();
+  const { currentNode, makeDecision, completed, profile, meters, reset, phase, caseId, engine } = useSimulation();
+  const entryNodeId = engine?.getCaseInfo().entryNodeId;
   const [stagePhase, setStagePhase] = useState<StagePhase>('overlay');
   const [transitionOut, setTransitionOut] = useState(false);
   const nodeRef = useRef(currentNode);
@@ -117,7 +119,10 @@ export function VNStage() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-storm-bg">
       {/* Background layer */}
-      <Background backgroundId={currentNode.background}>
+      <Background
+        backgroundId={currentNode.background}
+        priority={currentNode.id === entryNodeId}
+      >
         {/* Character sprite */}
         {!showOverlay && (
           <CharacterSprite
@@ -126,6 +131,9 @@ export function VNStage() {
           />
         )}
       </Background>
+
+      {/* Live learning indicators — §8 step 4 */}
+      <MeterHUD meters={meters} />
 
       {/* Transition overlay */}
       {transitionOut && (
@@ -176,6 +184,8 @@ function CompletionScreen({
   return (
     <div className="min-h-screen flex items-center justify-center bg-storm-bg p-6">
       <div className="max-w-md w-full text-center space-y-8 animate-fade-in">
+        <LoopProgress current="play" caseId={caseId} />
+
         <div className="text-storm-accent text-xs uppercase tracking-widest font-bold">
           Simulation Complete
         </div>
@@ -206,50 +216,20 @@ function CompletionScreen({
 
         <div className="gradient-divider max-w-xs mx-auto" />
 
-        {/* Links to debrief content */}
+        {/* The loop continues in sequence — reveal next, not a fork. */}
         <div className="flex flex-col gap-3">
           <p className="text-storm-dim text-xs">
             Your decisions shaped how information moved through your network
-            during a real crisis.
+            during a real crisis. Next, see what actually happened.
           </p>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Link
-              href={`/cases/${caseId}/evidence`}
-              className="rounded-xl border border-storm-dim/25 p-4 text-left hover:border-storm-accent/50 transition-colors"
-              style={{ background: 'rgba(28,25,22,0.5)' }}
-            >
-              <div className="text-storm-accent text-xs font-bold uppercase tracking-wider mb-1">
-                Evidence
-              </div>
-              <div className="text-storm-dim text-xs">
-                See what was real and what wasn&apos;t
-              </div>
-            </Link>
-
-            <Link
-              href={`/cases/${caseId}/debrief`}
-              className="rounded-xl border border-storm-dim/25 p-4 text-left hover:border-storm-accent/50 transition-colors"
-              style={{ background: 'rgba(28,25,22,0.5)' }}
-            >
-              <div className="text-storm-accent text-xs font-bold uppercase tracking-wider mb-1">
-                Debrief
-              </div>
-              <div className="text-storm-dim text-xs">
-                Context, toolkit &amp; profiles
-              </div>
-            </Link>
-          </div>
+          <ContinueButton current="play" caseId={caseId} label="See what actually happened" />
 
           <button
             onClick={onReplay}
-            className="inline-flex items-center justify-center gap-2 font-bold py-3 px-8 rounded-xl transition-all"
-            style={{
-              background: 'linear-gradient(135deg, #C4863A 0%, #D49A44 100%)',
-              color: '#0D0C0A',
-            }}
+            className="text-storm-dim hover:text-storm-text text-xs underline underline-offset-4 transition-colors"
           >
-            Replay Case
+            Replay the case instead
           </button>
         </div>
       </div>

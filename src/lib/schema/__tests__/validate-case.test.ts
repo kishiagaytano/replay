@@ -73,6 +73,28 @@ function baseCase(): Case {
       },
     ],
     toolkit: [],
+    historicalReveal: {
+      title: 'What actually happened',
+      intro: 'The documented timeline.',
+      beats: [
+        {
+          nodeId: 'n1',
+          date: '2025-11-03',
+          headline: 'A warning was issued',
+          whatHappened: 'Officials issued a warning.',
+          simulated: false,
+          citations: [{ publisher: 'PIA', title: 'Advisory', date: '2025-11-03' }],
+        },
+        {
+          nodeId: 'n2',
+          date: '2025-11-04',
+          headline: 'The final update was a simulated exercise',
+          whatHappened: 'This moment is a reconstructed exercise, not something a real person sent.',
+          simulated: true,
+          citations: [{ publisher: 'PIA', title: 'Advisory', date: '2025-11-03' }],
+        },
+      ],
+    },
     reflection: {
       profiles: [
         { id: 'responsible', title: 'Responsible', description: 'Description.' },
@@ -180,6 +202,38 @@ describe('validateCase', () => {
     const c = baseCase();
     delete c.reflection;
     expect(codes(validateCase(c))).toContain('MISSING_REFLECTION');
+  });
+
+  it('requires a historical reveal', () => {
+    const c = baseCase();
+    delete c.historicalReveal;
+    expect(codes(validateCase(c))).toContain('MISSING_REVEAL');
+  });
+
+  it('catches a reveal beat pointing at a node that does not exist', () => {
+    const c = baseCase();
+    c.historicalReveal!.beats[0].nodeId = 'ghost';
+    expect(codes(validateCase(c))).toContain('UNKNOWN_REVEAL_NODE');
+  });
+
+  it('requires a simulated beat to say so in its own copy (§9)', () => {
+    const c = baseCase();
+    // Strip the label from both fields — either one carrying it is enough.
+    c.historicalReveal!.beats[1].headline = 'The final family update';
+    c.historicalReveal!.beats[1].whatHappened = 'Someone sent a final update to their family.';
+    expect(codes(validateCase(c))).toContain('UNLABELED_SIMULATED_BEAT');
+
+    // Labelling it in either field satisfies the rule.
+    c.historicalReveal!.beats[1].headline = 'A reconstructed exercise';
+    expect(codes(validateCase(c))).not.toContain('UNLABELED_SIMULATED_BEAT');
+  });
+
+  it('warns when a decision moment has no reveal beat', () => {
+    const c = baseCase();
+    c.historicalReveal!.beats = [c.historicalReveal!.beats[0]];
+    const result = validateCase(c);
+    expect(result.ok).toBe(true);
+    expect(result.warnings.map((w) => w.code)).toContain('NODE_WITHOUT_REVEAL');
   });
 
   it('warns — but does not fail — on orphan evidence and untagged nodes', () => {

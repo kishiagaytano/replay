@@ -57,7 +57,7 @@ export function RunSummaryPanel({ caseId }: { caseId: string }) {
           Your Information Profile appears here once you finish the case.
         </p>
         <Link
-          href={`/cases/${caseId}`}
+          href={`/cases/${caseId}/play`}
           className="mt-4 inline-block text-storm-accent text-sm font-bold hover:underline"
         >
           Continue the simulation →

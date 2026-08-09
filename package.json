@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "pixelize": "tsx scripts/pixelize.ts"
+    "pixelize": "tsx scripts/pixelize.ts",
+    "validate:cases": "tsx --tsconfig tsconfig.scripts.json scripts/validate-cases.ts"
   },
   "dependencies": {
     "image-q": "^4.0.0",
@@ -27,6 +28,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
+    "playwright": "^1.62.1",
     "tailwindcss": "^4",
     "tsx": "^4.23.1",
     "typescript": "^5"
